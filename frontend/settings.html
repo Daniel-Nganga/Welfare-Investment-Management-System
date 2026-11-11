@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings - Welfare & Investment Group</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon"><i class="fas fa-users"></i></div>
+        <h3 id="organizationNameDisplay"></h3>
+      </div>
+      <nav class="nav">
+        <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="members.html" class="admin-only" hidden
+          ><i class="fas fa-users"></i> Members</a
+        >
+        <a href="contributions.html"
+          ><i class="fas fa-hand-holding-usd"></i> Contributions</a
+        >
+        <a href="welfare.html"><i class="fas fa-heart"></i> Welfare</a>
+        <a href="fines.html"><i class="fas fa-exclamation-circle"></i> Fines</a>
+        <a href="attendance.html"
+          ><i class="fas fa-calendar-check"></i> Attendance</a
+        >
+        <a href="expenses.html" class="admin-only" hidden
+          ><i class="fas fa-receipt"></i> Expenses</a
+        >
+        <a href="transactions.html"
+          ><i class="fas fa-exchange-alt"></i> Transactions</a
+        >
+        <a href="reports.html" class="admin-only" hidden
+          ><i class="fas fa-chart-bar"></i> Reports</a
+        >
+        <a href="pdf-reports.html" class="admin-only" hidden
+          ><i class="fas fa-file-pdf"></i> PDF Reports</a
+        >
+        <a href="settings.html" class="active"
+          ><i class="fas fa-cog"></i> Settings</a
+        >
+      </nav>
+      <div class="logout">
+        <a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <div>
+          <h2>Settings</h2>
+          <p>Manage your account and system preferences</p>
+        </div>
+
+        <div class="user-info">
+          <div class="notification-wrapper">
+            <button
+              type="button"
+              id="notificationBell"
+              class="notification-bell"
+              aria-label="Open notifications"
+            >
+              <i class="fas fa-bell"></i>
+              <span id="notificationCount" class="notification-count hidden">
+                0
+              </span>
+            </button>
+
+            <div id="notificationDropdown" class="notification-dropdown hidden">
+              <div class="notification-header">
+                <h3>Notifications</h3>
+
+                <button id="markAllNotificationsRead">Mark all as read</button>
+              </div>
+
+              <div id="notificationList" class="notification-list">
+                <p class="empty-notifications">Loading notifications...</p>
+              </div>
+
+              <div class="notification-footer">
+                <small
+                  >Notifications are automatically deleted after 30 days.</small
+                >
+              </div>
+            </div>
+          </div>
+          <div class="avatar">
+            <img
+              id="topbarProfilePicture"
+              src="https://i.pravatar.cc/100?img=12"
+              alt="Profile picture"
+            />
+            <div>
+              <strong style="font-size: 0.9rem" id="profileName"></strong
+              ><br /><small style="color: #64748b" id="memberRole"></small>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="content settings-content">
+        <div class="settings-heading">
+          <div>
+            <span class="settings-label">ACCOUNT PREFERENCES</span>
+            <h2>Settings & Preferences</h2>
+            <p>
+              Manage your personal information, security and system
+              configuration.
+            </p>
+          </div>
+          <div class="settings-icon">
+            <i class="fas fa-sliders-h"></i>
+          </div>
+        </div>
+
+        <!-- Settings navigation -->
+        <div
+          class="tabs settings-tabs"
+          id="settingsTabs"
+          role="tablist"
+          aria-label="Settings sections"
+        >
+          <button
+            class="active"
+            type="button"
+            data-tab="general"
+            role="tab"
+            aria-selected="true"
+          >
+            <i class="fas fa-user"></i>
+            General
+          </button>
+
+          <button
+            class="admin-only"
+            hidden
+            type="button"
+            data-tab="contribution"
+            role="tab"
+            aria-selected="false"
+          >
+            <i class="fas fa-coins"></i>
+            Contribution Rules
+          </button>
+
+          <button
+            type="button"
+            data-tab="notification"
+            role="tab"
+            aria-selected="false"
+          >
+            <i class="fas fa-bell"></i>
+            Notification
+          </button>
+
+          <button
+            class="admin-only"
+            hidden
+            type="button"
+            data-tab="system"
+            role="tab"
+            aria-selected="false"
+          >
+            <i class="fas fa-server"></i>
+            System
+          </button>
+        </div>
+
+        <div class="settings-grid">
+          <!-- =========================================================
+               TAB 1: GENERAL (Personal Information, Account Security, Profile Picture)
+               ========================================================= -->
+
+          <!-- 1.1 Personal Information -->
+          <section class="card settings-card" data-section="general">
+            <div class="settings-card-heading">
+              <div class="section-icon personal-icon">
+                <i class="fas fa-user-circle"></i>
+              </div>
+              <div>
+                <h3>Personal Information</h3>
+                <p>Your registered member details</p>
+              </div>
+            </div>
+
+            <div class="profile-details">
+              <div class="detail-item">
+                <span>Full Name</span>
+                <h4 id="MemberName">Loading...</h4>
+              </div>
+
+              <div class="detail-item">
+                <span>Member Number</span>
+                <h4 id="MemberNumber">Loading...</h4>
+              </div>
+
+              <div class="detail-item">
+                <span>Phone Number</span>
+                <h4 id="PhoneNumber">Loading...</h4>
+              </div>
+
+              <div class="detail-item">
+                <span>Email Address</span>
+                <h4 id="email">Not provided</h4>
+              </div>
+            </div>
+
+            <div class="info-note">
+              <i class="fas fa-info-circle"></i>
+              <span
+                >Contact your system administrator if your registered details
+                need updating.</span
+              >
+            </div>
+          </section>
+
+          <!-- 1.2 Account Security -->
+          <section class="card settings-card" data-section="general">
+            <div class="settings-card-heading">
+              <div class="section-icon security-icon">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <div>
+                <h3>Account Security</h3>
+                <p>Keep your account protected</p>
+              </div>
+            </div>
+
+            <form id="changePasswordForm">
+              <div class="form-group">
+                <label for="CurrentPassword">Current Password</label>
+                <div class="password-input">
+                  <i class="fas fa-lock"></i>
+                  <input
+                    type="password"
+                    id="CurrentPassword"
+                    name="currentPassword"
+                    placeholder="Enter current password"
+                    required
+                  />
+                  <i
+                    class="fas fa-eye toggle-password"
+                    data-target="CurrentPassword"
+                  ></i>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="newPassword">New Password</label>
+                <div class="password-input">
+                  <i class="fas fa-key"></i>
+                  <input
+                    type="password"
+                    id="newPassword"
+                    name="newPassword"
+                    placeholder="Enter new password"
+                    minlength="8"
+                    required
+                  />
+                  <i
+                    class="fas fa-eye toggle-password"
+                    data-target="newPassword"
+                  ></i>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="repeatPassword">Confirm New Password</label>
+                <div class="password-input">
+                  <i class="fas fa-check-circle"></i>
+                  <input
+                    type="password"
+                    id="repeatPassword"
+                    name="confirmPassword"
+                    placeholder="Repeat new password"
+                    minlength="8"
+                    required
+                  />
+                  <i
+                    class="fas fa-eye toggle-password"
+                    data-target="repeatPassword"
+                  ></i>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-lock"></i> Change Password
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <!-- 1.3 Profile Picture -->
+          <section class="card settings-card" data-section="general">
+            <div class="settings-card-heading">
+              <div class="section-icon profile-icon">
+                <i class="fas fa-camera"></i>
+              </div>
+              <div>
+                <h3>Profile Picture</h3>
+                <p>Personalize your account</p>
+              </div>
+            </div>
+
+            <div class="profile-upload">
+              <div class="logo-preview">
+                <label for="image-picker" class="picker-label">
+                  <div class="logo-container" id="logo-display">
+                    <div class="umbrella-arch"></div>
+                    <div class="people-group">
+                      <div class="person side left"></div>
+                      <div class="person center"></div>
+                      <div class="person side right"></div>
+                    </div>
+                  </div>
+                  <span class="picker-text"
+                    >Choose an image from your gallery</span
+                  >
+                </label>
+                <input type="file" id="image-picker" accept="image/*" />
+              </div>
+
+              <button
+                class="btn btn-outline"
+                id="change-logo-btn"
+                type="button"
+              >
+                <i class="fas fa-upload"></i> Change Profile
+              </button>
+
+              <p class="logo-meta">
+                <i class="fas fa-image"></i>
+                Recommended size: 200 × 200 pixels
+              </p>
+            </div>
+          </section>
+
+          <!-- =========================================================
+               TAB 2: CONTRIBUTION RULES (Admin Only)
+               ========================================================= -->
+
+          <!-- 2.1 Contribution Rules -->
+          <section
+            class="card settings-card admin-only"
+            data-section="contribution"
+            hidden
+          >
+            <div class="settings-card-heading">
+              <div class="section-icon finance-icon">
+                <i class="fas fa-hand-holding-usd"></i>
+              </div>
+              <div>
+                <h3>Contribution Rules</h3>
+                <p>Set the required member contributions</p>
+              </div>
+            </div>
+
+            <div class="settings-info">
+              <i class="fas fa-info-circle"></i>
+              Configure the expected monthly contributions for each member.
+            </div>
+
+            <div class="form-group">
+              <label for="investmentAmount"
+                >Monthly Investment Contribution</label
+              >
+              <div class="money-input">
+                <span>KSh</span>
+                <input
+                  type="number"
+                  id="investmentAmount"
+                  value="1400"
+                  min="0"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="welfareAmount">Monthly Welfare Contribution</label>
+              <div class="money-input">
+                <span>KSh</span>
+                <input type="number" id="welfareAmount" value="250" min="0" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="defaultFineAmount">Default Fine Amount</label>
+              <div class="money-input">
+                <span>KSh</span>
+                <input
+                  type="number"
+                  id="defaultFineAmount"
+                  value="500"
+                  min="0"
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="contributionDueDay"
+                >Monthly Contribution Due Day</label
+              >
+              <select id="contributionDueDay">
+                <option value="5">5th of every month</option>
+                <option value="10" selected>10th of every month</option>
+                <option value="15">15th of every month</option>
+                <option value="20">20th of every month</option>
+                <option value="25">25th of every month</option>
+              </select>
+            </div>
+
+            <div class="settings-warning">
+              <i class="fas fa-exclamation-triangle"></i>
+              Investment funds must remain separate from welfare funds. Changing
+              these values should not automatically alter existing payment
+              records.
+            </div>
+          </section>
+
+          <!-- =========================================================
+               TAB 3: NOTIFICATION
+               ========================================================= -->
+
+          <!-- 3.1 Notification Preferences -->
+          <section class="card settings-card" data-section="notification">
+            <div class="settings-card-heading">
+              <div class="section-icon notification-icon">
+                <i class="fas fa-bell"></i>
+              </div>
+              <div>
+                <h3>Notification Preferences</h3>
+                <p>Choose the notifications you want to receive</p>
+              </div>
+            </div>
+
+            <div class="notification-list">
+              <div class="notification-option">
+                <div>
+                  <h4>Payment Notifications</h4>
+                  <p>Receive updates when contributions are recorded.</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="paymentNotifications" checked />
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+
+              <div class="notification-option">
+                <div>
+                  <h4>Fine Notifications</h4>
+                  <p>Receive reminders about outstanding fines.</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="fineNotifications" checked />
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+
+              <div class="notification-option">
+                <div>
+                  <h4>Attendance Notifications</h4>
+                  <p>Receive updates about attendance records.</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="attendanceNotifications" checked />
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+
+              <div class="notification-option">
+                <div>
+                  <h4>System Announcements</h4>
+                  <p>Receive important group announcements.</p>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="systemNotifications" checked />
+                  <span class="switch-slider"></span>
+                </label>
+              </div>
+            </div>
+          </section>
+
+          <!-- =========================================================
+               TAB 4: SYSTEM (Admin Only)
+               ========================================================= -->
+
+          <!-- 4.1 System Configuration -->
+          <section
+            class="card settings-card admin-only"
+            data-section="system"
+            hidden
+          >
+            <div class="settings-card-heading">
+              <div class="section-icon system-icon">
+                <i class="fas fa-server"></i>
+              </div>
+              <div>
+                <h3>System Configuration</h3>
+                <p>Manage the general system preferences</p>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="organizationName">Organization Name</label>
+              <input
+                type="text"
+                id="organizationName"
+                value="Welfare & Investment Group"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="organizationEmail">Organization Email</label>
+              <input
+                type="email"
+                id="organizationEmail"
+                placeholder="Enter organization email"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="organizationPhone">Organization Phone</label>
+              <input
+                type="tel"
+                id="organizationPhone"
+                placeholder="+254 7XX XXX XXX"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="financialYear">Financial Year</label>
+              <input
+                type="text"
+                id="financialYear"
+                placeholder="MM/YYYY - MM/YYYY"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="currency">System Currency</label>
+              <select id="currency">
+                <option value="KES">KSh - Kenyan Shilling</option>
+              </select>
+            </div>
+          </section>
+
+          <!-- 4.2 System Information -->
+          <section
+            class="card settings-card admin-only"
+            data-section="system"
+            hidden
+          >
+            <div class="settings-card-heading">
+              <div class="section-icon system-icon">
+                <i class="fas fa-info-circle"></i>
+              </div>
+              <div>
+                <h3>System Information</h3>
+                <p>Application details and system information</p>
+              </div>
+            </div>
+
+            <div class="system-info-row">
+              <span>Application</span>
+              <strong>Welfare & Investment Management System</strong>
+            </div>
+
+            <div class="system-info-row">
+              <span>Version</span>
+              <strong>1.0.0</strong>
+            </div>
+
+            <div class="system-info-row">
+              <span>Database</span>
+              <strong>MongoDB</strong>
+            </div>
+
+            <div class="system-info-row">
+              <span>Backend</span>
+              <strong>Node.js & Express</strong>
+            </div>
+          </section>
+        </div>
+        <!-- Page Notification -->
+        <div
+          id="pageNotification"
+          class="page-notification"
+          role="status"
+          aria-live="polite"
+        ></div>
+
+        <div class="settings-footer">
+          <div>
+            <i class="fas fa-shield-alt"></i>
+            Your account information is protected.
+          </div>
+          <button class="btn btn-primary" id="saveSettingsBtn" type="button">
+            <i class="fas fa-save"></i> Save Settings
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="settings.js"></script>
+    <script src="notifications.js"></script>
+  </body>
+</html>

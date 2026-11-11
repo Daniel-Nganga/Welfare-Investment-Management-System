@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fines - Welfare & Investment Group</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="fines.css" />
+  </head>
+  <body>
+    <!-- SIDEBAR: kept as supplied -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon"><i class="fas fa-users"></i></div>
+        <h3>Welfare & Investment Group</h3>
+      </div>
+      <nav class="nav">
+        <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="members.html" class="admin-only" hidden
+          ><i class="fas fa-users"></i> Members</a
+        >
+        <a href="contributions.html"
+          ><i class="fas fa-hand-holding-usd"></i> Contributions</a
+        >
+        <a href="welfare.html"><i class="fas fa-heart"></i> Welfare</a>
+        <a href="fines.html" class="active"
+          ><i class="fas fa-exclamation-circle"></i> Fines</a
+        >
+        <a href="attendance.html"
+          ><i class="fas fa-calendar-check"></i> Attendance</a
+        >
+        <a href="expenses.html" class="admin-only" hidden
+          ><i class="fas fa-receipt"></i> Expenses</a
+        >
+        <a href="transactions.html"
+          ><i class="fas fa-exchange-alt"></i> Transactions</a
+        >
+        <a href="reports.html" class="admin-only" hidden
+          ><i class="fas fa-chart-bar"></i> Reports</a
+        >
+        <a href="pdf-reports.html" class="admin-only" hidden
+          ><i class="fas fa-file-pdf"></i> PDF Reports</a
+        >
+        <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+      </nav>
+      <div class="logout">
+        <a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <h2>FINES</h2>
+        <div class="user-info">
+          <div class="notification-wrapper">
+            <button
+              type="button"
+              id="notificationBell"
+              class="notification-bell"
+              aria-label="Open notifications"
+            >
+              <i class="fas fa-bell"></i>
+              <span id="notificationCount" class="notification-count hidden">
+                0
+              </span>
+            </button>
+
+            <div id="notificationDropdown" class="notification-dropdown hidden">
+              <div class="notification-header">
+                <h3>Notifications</h3>
+
+                <button id="markAllNotificationsRead">Mark all as read</button>
+              </div>
+
+              <div id="notificationList" class="notification-list">
+                <p class="empty-notifications">Loading notifications...</p>
+              </div>
+
+              <div class="notification-footer">
+                <small
+                  >Notifications are automatically deleted after 30 days.</small
+                >
+              </div>
+            </div>
+          </div>
+          <div class="avatar">
+            <img
+              id="topbarProfilePicture"
+              src="https://i.pravatar.cc/100?img=12"
+              alt="Profile"
+            />
+            <div>
+              <strong id="profileName"></strong><br />
+              <small id="memberRole"></small>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <section class="content fines-page">
+        <div class="fines-heading">
+          <div>
+            <p class="eyebrow">FINANCIAL MANAGEMENT</p>
+            <h1>Fines & Payments</h1>
+            <p class="page-description">
+              Manage fines imposed on members and track payments received.
+            </p>
+          </div>
+          <button
+            type="button"
+            id="addPaymentBtn"
+            class="admin-only btn btn-primary"
+            hidden
+          >
+            <i class="fas fa-plus"></i>
+            <span id="mainActionText">Add Fine</span>
+          </button>
+        </div>
+
+        <!-- Summary cards: values can be populated by fine.js -->
+        <div class="fine-summary-grid">
+          <article class="fine-summary-card">
+            <div class="summary-icon purple">
+              <i class="fas fa-file-invoice-dollar"></i>
+            </div>
+            <div>
+              <span>Total Fines Imposed</span>
+              <strong id="totalFinesAmount">KSh 0.00</strong>
+              <small>All recorded fines</small>
+            </div>
+          </article>
+          <article class="fine-summary-card">
+            <div class="summary-icon green">
+              <i class="fas fa-circle-check"></i>
+            </div>
+            <div>
+              <span>Total Fine Payments</span>
+              <strong id="AmountPaidFine">KSh 0.00</strong>
+              <small>Payments received</small>
+            </div>
+          </article>
+          <article class="fine-summary-card">
+            <div class="summary-icon orange">
+              <i class="fas fa-hourglass-half"></i>
+            </div>
+            <div>
+              <span>Outstanding Balance</span>
+              <strong id="BalanceWelFine">KSh 0.00</strong>
+              <small>Amount yet to be paid</small>
+            </div>
+          </article>
+        </div>
+
+        <!-- Switch between fine records and payment records -->
+        <div class="fine-toolbar">
+          <div
+            class="fine-tabs"
+            role="tablist"
+            aria-label="Fine management views"
+          >
+            <button
+              type="button"
+              class="fine-tab active"
+              id="finesTab"
+              data-view="finesView"
+              role="tab"
+              aria-selected="true"
+            >
+              <i class="fas fa-file-circle-exclamation"></i> Fines
+              <span class="tab-count" id="fineCount">0</span>
+            </button>
+            <button
+              type="button"
+              class="fine-tab"
+              id="paymentsTab"
+              data-view="paymentsView"
+              role="tab"
+              aria-selected="false"
+            >
+              <i class="fas fa-money-bill-transfer"></i> Fine Payments
+              <span class="tab-count" id="finePaymentCount">0</span>
+            </button>
+          </div>
+          <div class="fine-view-hint" id="viewHint">
+            Showing fines imposed on members
+          </div>
+        </div>
+
+        <!-- Shared filters -->
+        <div class="fine-filter-card">
+          <div class="filter-search">
+            <i class="fas fa-search"></i>
+            <input
+              type="search"
+              id="fineSearchInput"
+              placeholder="Search by member, member number or fine..."
+            />
+          </div>
+          <select id="fineMonthFilter" aria-label="Filter by month">
+            <option value="">All Months</option>
+            <option value="0">January</option>
+            <option value="1">February</option>
+            <option value="2">March</option>
+            <option value="3">April</option>
+            <option value="4">May</option>
+            <option value="5">June</option>
+            <option value="6">July</option>
+            <option value="7">August</option>
+            <option value="8">September</option>
+            <option value="9">October</option>
+            <option value="10">November</option>
+            <option value="11">December</option>
+          </select>
+          <select id="fineYearFilter" aria-label="Filter by year">
+            <option value="">All Years</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+            <option value="2027">2027</option>
+          </select>
+          <button type="button" class="btn btn-filter" id="fineFilterBtn">
+            <i class="fas fa-filter"></i> Filter
+          </button>
+          <button type="button" class="btn btn-reset" id="fineResetBtn">
+            Reset
+          </button>
+        </div>
+
+        <!-- FINES VIEW -->
+        <section
+          class="fine-view-panel"
+          id="finesView"
+          role="tabpanel"
+          aria-labelledby="finesTab"
+        >
+          <div class="table-card">
+            <div class="table-card-heading">
+              <div>
+                <h3>Fines Register</h3>
+                <p>
+                  Fines assigned to group members and their current balances.
+                </p>
+              </div>
+              <span class="table-label"
+                ><i class="fas fa-list-check"></i> Fine records</span
+              >
+            </div>
+            <div class="table-responsive">
+              <table class="fine-table">
+                <thead>
+                  <tr>
+                    <th>No.</th>
+                    <th>Date</th>
+                    <th>Member</th>
+                    <th>Fine Type</th>
+                    <th>Fine Imposed</th>
+                    <th>Amount Paid</th>
+                    <th>Pending Balance</th>
+                    <th>Status</th>
+                    <th class="admin-only" hidden>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="finesTableBody">
+                  <tr>
+                    <td colspan="9" class="empty-state">
+                      Fine records will appear here.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="table-footer">
+              <span id="finesRecordCount">Showing 0 fine records</span>
+              <div class="pagination" id="finesPagination"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- FINE PAYMENTS VIEW -->
+        <section
+          class="fine-view-panel"
+          id="paymentsView"
+          role="tabpanel"
+          aria-labelledby="paymentsTab"
+          hidden
+        >
+          <div class="table-card">
+            <div class="table-card-heading">
+              <div>
+                <h3>Fine Payment Register</h3>
+                <p>Every payment received against a member's fine.</p>
+              </div>
+              <span class="table-label"
+                ><i class="fas fa-money-check-dollar"></i> Payment records</span
+              >
+            </div>
+            <div class="table-responsive">
+              <table class="fine-table">
+                <thead>
+                  <tr>
+                    <th>No.</th>
+                    <th>Date Paid</th>
+                    <th>Member</th>
+                    <th>Fine Type</th>
+                    <th>Amount Paid</th>
+                    <th>Payment Method</th>
+                    <th>Confirmation Code</th>
+                    <th class="admin-only" hidden>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="finePaymentHistoryBody">
+                  <tr>
+                    <td colspan="8" class="empty-state">
+                      Fine payment records will appear here.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="table-footer">
+              <span id="paymentsRecordCount">Showing 0 payment records</span>
+              <div class="pagination" id="paymentsPagination"></div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <!-- Delete confirmation modal -->
+    <div id="deletePaymentModal" class="delete-modal" hidden>
+      <div
+        class="delete-modal-box"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="deleteModalTitle"
+      >
+        <div class="delete-icon"><i class="fas fa-trash"></i></div>
+        <h2 id="deleteModalTitle">Delete Record?</h2>
+        <p id="deleteModalMessage">
+          Are you sure you want to delete this record? This action cannot be
+          undone.
+        </p>
+        <div class="delete-actions">
+          <button type="button" id="cancelDeleteBtn" class="btn btn-outline">
+            Cancel
+          </button>
+          <button type="button" id="confirmDeleteBtn" class="btn btn-danger">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="pageNotification"
+      class="page-notification"
+      role="status"
+      aria-live="polite"
+    ></div>
+
+    <!-- Add / edit fine or record payment modal -->
+    <div id="paymentModal" class="payment-modal" hidden>
+      <div
+        class="payment-modal-content"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="paymentModalTitle"
+      >
+        <div class="payment-modal-header">
+          <div>
+            <span class="eyebrow">FINE MANAGEMENT</span>
+            <h2 id="paymentModalTitle">Record Fine</h2>
+          </div>
+          <button
+            type="button"
+            id="closePaymentModal"
+            class="close-modal"
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </div>
+
+        <form id="addPaymentForm">
+          <div class="form-group">
+            <label for="fineAction">Action</label>
+            <select id="fineAction" name="fineAction" required>
+              <option value="record">Record Fine</option>
+              <option value="pay">Pay Fine</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="memberNumber">Member Number</label>
+            <input
+              type="text"
+              id="memberNumber"
+              name="memberNumber"
+              placeholder="Enter member number"
+              required
+            />
+          </div>
+
+          <div class="form-group" id="fineSelectionGroup" hidden>
+            <label for="fineId">Select Outstanding Fine</label>
+            <select id="fineId" name="fineId">
+              <option value="">Select a fine</option>
+            </select>
+            <small>Select the fine this payment belongs to.</small>
+          </div>
+
+          <div class="form-group" id="fineTypeGroup">
+            <label for="fineType">Fine Type</label>
+            <select id="fineType" name="fineType">
+              <option value="">Select fine type</option>
+              <option value="Attendance">Attendance</option>
+              <option value="Lateness">Lateness</option>
+              <option value="SACCO">SACCO</option>
+              <option value="Conduct">Conduct</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="otherFineDescriptionGroup" hidden>
+            <label for="fineDescription">Fine Description</label>
+            <textarea
+              id="fineDescription"
+              name="description"
+              rows="3"
+              placeholder="Describe the reason for this fine"
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="amount">Amount (KSh)</label>
+            <input
+              type="number"
+              id="amount"
+              name="amount"
+              min="0.01"
+              step="0.01"
+              placeholder="Enter amount"
+              required
+            />
+          </div>
+
+          <div class="form-group" id="paymentStatusGroup">
+            <label for="paymentStatus">Payment Status</label>
+            <input type="text" id="paymentStatus" value="Pending" disabled />
+            <small
+              >Payment status is calculated automatically from recorded
+              payments.</small
+            >
+          </div>
+
+          <div class="form-group" id="paymentMethodGroup" hidden>
+            <label for="paymentMethod">Payment Method</label>
+            <select id="paymentMethod" name="paymentMethod">
+              <option value="">Select payment method</option>
+              <option value="Cash">Cash</option>
+              <option value="Mpesa">M-Pesa</option>
+            </select>
+          </div>
+
+          <div class="form-group" id="confirmationCodeGroup" hidden>
+            <label for="confirmationCode"
+              >Confirmation Code
+              <span class="optional-label">(if applicable)</span></label
+            >
+            <input
+              type="text"
+              id="confirmationCode"
+              name="confirmationCode"
+              placeholder="Enter M-Pesa confirmation code"
+            />
+            <small>Enter the transaction code for M-Pesa payments.</small>
+          </div>
+
+          <p id="paymentFormMessage" class="form-message" role="status"></p>
+          <div class="modal-actions">
+            <button type="submit" id="savePaymentBtn" class="btn btn-primary">
+              Record Fine
+            </button>
+            <button type="button" id="cancelPaymentBtn" class="btn btn-outline">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      // Switch between the Fines and Fine Payments tables.
+      document.querySelectorAll(".fine-tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const selectedView = tab.dataset.view;
+
+          document.querySelectorAll(".fine-tab").forEach((item) => {
+            const active = item === tab;
+            item.classList.toggle("active", active);
+            item.setAttribute("aria-selected", String(active));
+          });
+
+          document.querySelectorAll(".fine-view-panel").forEach((panel) => {
+            panel.hidden = panel.id !== selectedView;
+          });
+
+          const actionText =
+            selectedView === "paymentsView" ? "Record Payment" : "Add Fine";
+          const actionLabel = document.getElementById("mainActionText");
+          if (actionLabel) actionLabel.textContent = actionText;
+
+          document.getElementById("viewHint").textContent =
+            selectedView === "paymentsView"
+              ? "Showing payments received against member fines"
+              : "Showing fines imposed on members";
+        });
+      });
+    </script>
+
+    <script src="fine.js"></script>
+    <script src="notifications.js"></script>
+  </body>
+</html>

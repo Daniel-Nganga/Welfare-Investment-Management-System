@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Welfare & Investment Group</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon"><i class="fas fa-users"></i></div>
+        <h3>Welfare & Investment Group</h3>
+      </div>
+      <nav class="nav">
+        <a href="dashboard.html" class="active"
+          ><i class="fas fa-home"></i> Dashboard</a
+        >
+        <a href="members.html" class="admin-only" hidden
+          ><i class="fas fa-users"></i> Members</a
+        >
+        <a href="contributions.html"
+          ><i class="fas fa-hand-holding-usd"></i> Contributions</a
+        >
+        <a href="welfare.html"><i class="fas fa-heart"></i> Welfare</a>
+        <a href="fines.html"><i class="fas fa-exclamation-circle"></i> Fines</a>
+        <a href="attendance.html"
+          ><i class="fas fa-calendar-check"></i> Attendance</a
+        >
+        <a href="expenses.html" class="admin-only" hidden
+          ><i class="fas fa-receipt"></i> Expenses</a
+        >
+        <a href="transactions.html"
+          ><i class="fas fa-exchange-alt"></i> Transactions</a
+        >
+        <a href="reports.html" class="admin-only" hidden
+          ><i class="fas fa-chart-bar"></i> Reports</a
+        >
+        <a href="pdf-reports.html " class="admin-only" hidden
+          ><i class="fas fa-file-pdf"></i> PDF Reports</a
+        >
+        <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+      </nav>
+      <div class="logout">
+        <a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main">
+      <header class="topbar">
+        <h2>Dashboard</h2>
+        <div class="user-info">
+          <div class="notification-wrapper">
+            <button
+              type="button"
+              id="notificationBell"
+              class="notification-bell"
+              aria-label="Open notifications"
+            >
+              <i class="fas fa-bell"></i>
+              <span id="notificationCount" class="notification-count hidden">
+                0
+              </span>
+            </button>
+
+            <div id="notificationDropdown" class="notification-dropdown hidden">
+              <div class="notification-header">
+                <h3>Notifications</h3>
+
+                <button id="markAllNotificationsRead">Mark all as read</button>
+              </div>
+
+              <div id="notificationList" class="notification-list">
+                <p class="empty-notifications">Loading notifications...</p>
+              </div>
+
+              <div class="notification-footer">
+                <small
+                  >Notifications are automatically deleted after 30 days.</small
+                >
+              </div>
+            </div>
+          </div>
+          <div class="avatar">
+            <img
+              id="topbarProfilePicture"
+              src="https://i.pravatar.cc/100?img=12"
+              alt="User"
+            />
+            <div>
+              <strong style="font-size: 0.9rem" id="memberProfileName"></strong
+              ><br /><small style="color: #64748b" id="memberRole"></small>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="content">
+        <p style="color: #64748b; margin-bottom: 18px">Financial Overview</p>
+
+        <!-- Stats -->
+        <div class="stats-row">
+          <div class="stat-card admin-only blue" hidden>
+            <div class="icon"><i class="fas fa-users"></i></div>
+            <div>
+              <h4>Total Members</h4>
+              <div class="value" id="TotalMembers"></div>
+              <div class="sub">Active Members</div>
+            </div>
+          </div>
+          <div class="stat-card green">
+            <div class="icon"><i class="fas fa-chart-line"></i></div>
+            <div>
+              <h4>Total Investment</h4>
+              <div class="value" id="TotalInvestment">KSh 0</div>
+              <div class="sub">This Month</div>
+            </div>
+          </div>
+          <div class="stat-card orange">
+            <div class="icon"><i class="fas fa-hand-holding-heart"></i></div>
+            <div>
+              <h4>Total Welfare</h4>
+              <div class="value" id="TotalWelfare">KSh 0</div>
+              <div class="sub">This Month</div>
+            </div>
+          </div>
+          <div class="admin-only stat-card red" hidden>
+            <div class="icon"><i class="fas fa-money-bill-wave"></i></div>
+            <div>
+              <h4>Total Expenses</h4>
+              <div class="value" id="TotalExpenses">KSh 0</div>
+              <div class="sub">This Month</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mid cards -->
+        <div class="mid-row">
+          <div class="mid-card purple">
+            <div class="icon"><i class="fas fa-gavel"></i></div>
+            <div>
+              <h4>Total Fines</h4>
+              <div class="value" id="TotalFines">KSh 0</div>
+              <div class="sub">This Month</div>
+            </div>
+          </div>
+          <div class="mid-card teal">
+            <div class="icon"><i class="fas fa-wallet"></i></div>
+            <div>
+              <h4>Total Balance</h4>
+              <div class="value" id="TotalBalance">KSh 0</div>
+              <div class="sub">Available</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-row">
+          <div class="chart-card">
+            <h3>Monthly Contributions</h3>
+            <div class="bar-chart">
+              <!-- Simplified static bars for demo -->
+              <div class="bar-group">
+                <div class="bars">
+                  <div class="bar invest" style="height: 60%"></div>
+                  <div class="bar welfare" style="height: 40%"></div>
+                </div>
+                <span class="bar-label">Jan</span>
+              </div>
+              <div class="bar-group">
+                <div class="bars">
+                  <div class="bar invest" style="height: 75%"></div>
+                  <div class="bar welfare" style="height: 50%"></div>
+                </div>
+                <span class="bar-label">Feb</span>
+              </div>
+              <div class="bar-group">
+                <div class="bars">
+                  <div class="bar invest" style="height: 55%"></div>
+                  <div class="bar welfare" style="height: 35%"></div>
+                </div>
+                <span class="bar-label">Mar</span>
+              </div>
+              <div class="bar-group">
+                <div class="bars">
+                  <div class="bar invest" style="height: 90%"></div>
+                  <div class="bar welfare" style="height: 60%"></div>
+                </div>
+                <span class="bar-label">Apr</span>
+              </div>
+              <div class="bar-group">
+                <div class="bars">
+                  <div class="bar invest" style="height: 70%"></div>
+                  <div class="bar welfare" style="height: 45%"></div>
+                </div>
+                <span class="bar-label">May</span>
+              </div>
+              <div class="bar-group">
+                <div class="bars">
+                  <div class="bar invest" style="height: 85%"></div>
+                  <div class="bar welfare" style="height: 55%"></div>
+                </div>
+                <span class="bar-label">Jun</span>
+              </div>
+              <div class="bar-group">
+                <div class="bars">
+                  <div class="bar invest" style="height: 65%"></div>
+                  <div class="bar welfare" style="height: 40%"></div>
+                </div>
+                <span class="bar-label">Jul</span>
+              </div>
+              <div class="bar-group">
+                <div class="bars">
+                  <div class="bar invest" style="height: 95%"></div>
+                  <div class="bar welfare" style="height: 70%"></div>
+                </div>
+                <span class="bar-label">Aug</span>
+              </div>
+              <div class="bar-group">
+                <div class="bars">
+                  <div class="bar invest" style="height: 80%"></div>
+                  <div class="bar welfare" style="height: 50%"></div>
+                </div>
+                <span class="bar-label">Sep</span>
+              </div>
+              <div class="bar-group">
+                <div class="bars">
+                  <div class="bar invest" style="height: 100%"></div>
+                  <div class="bar welfare" style="height: 65%"></div>
+                </div>
+                <span class="bar-label">Oct</span>
+              </div>
+              <div class="bar-group">
+                <div class="bars">
+                  <div class="bar invest" style="height: 70%"></div>
+                  <div class="bar welfare" style="height: 45%"></div>
+                </div>
+                <span class="bar-label">Nov</span>
+              </div>
+              <div class="bar-group">
+                <div class="bars">
+                  <div class="bar invest" style="height: 88%"></div>
+                  <div class="bar welfare" style="height: 58%"></div>
+                </div>
+                <span class="bar-label">Dec</span>
+              </div>
+            </div>
+            <div style="margin-top: 12px; font-size: 0.85rem; color: #64748b">
+              <span style="color: #3b82f6">■</span> Investment &nbsp;
+              <span style="color: #10b981">■</span> Welfare
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3>Contribution Breakdown</h3>
+            <div class="pie-container">
+              <div class="pie"></div>
+              <div class="legend" id="PieLegend">
+                <!-- These values will be fully dynamic now -->
+                <div>
+                  <span style="background: #3b82f6"></span> Investment 0%
+                </div>
+                <div><span style="background: #10b981"></span> Welfare 0%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="table-card">
+          <div class="header">
+            <h3>Recent Transactions</h3>
+            <a href="#">View All</a>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Member</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="recentTransactionsBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <script src="dashboard.js"></script>
+    <script src="notifications.js"></script>
+  </body>
+</html>

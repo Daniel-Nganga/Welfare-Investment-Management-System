@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Attendance - Welfare & Investment Group</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .dev-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        padding: 40px 24px;
+        max-width: 480px;
+        margin: 40px auto;
+        background-color: #ffffff;
+        border: 1px solid #e4e4e7;
+        border-radius: 12px;
+        box-shadow:
+          0 4px 6px -1px rgba(0, 0, 0, 0.05),
+          0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      }
+
+      .dev-icon {
+        width: 52px;
+        height: 52px;
+        color: #2563eb; /* Professional Blue */
+        margin-bottom: 16px;
+      }
+
+      .dev-heading {
+        font-size: 20px;
+        font-weight: 600;
+        color: #18181b;
+        margin: 0 0 8px 0;
+      }
+
+      .dev-text {
+        font-size: 14px;
+        color: #71717a;
+        line-height: 1.5;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon"><i class="fas fa-users"></i></div>
+        <h3>Welfare & Investment Group</h3>
+      </div>
+      <nav class="nav">
+        <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="members.html" class="admin-only" hidden
+          ><i class="fas fa-users"></i> Members</a
+        >
+        <a href="contributions.html"
+          ><i class="fas fa-hand-holding-usd"></i> Contributions</a
+        >
+        <a href="welfare.html"><i class="fas fa-heart"></i> Welfare</a>
+        <a href="fines.html"><i class="fas fa-exclamation-circle"></i> Fines</a>
+        <a href="attendance.html"
+          ><i class="fas fa-calendar-check"></i> Attendance</a
+        >
+        <a href="expenses.html" class="admin-only" hidden
+          ><i class="fas fa-receipt"></i> Expenses</a
+        >
+        <a href="transactions.html"
+          ><i class="fas fa-exchange-alt"></i> Transactions</a
+        >
+        <a href="reports.html" class="admin-only" hidden
+          ><i class="fas fa-chart-bar"></i> Reports</a
+        >
+        <a href="pdf-reports.html " class="active" class="admin-only" hidden
+          ><i class="fas fa-file-pdf"></i> PDF Reports</a
+        >
+        <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+      </nav>
+      <div class="logout">
+        <a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <h2>PDF REPORTS</h2>
+        <div class="user-info">
+          <div class="notification-wrapper">
+            <button
+              type="button"
+              id="notificationBell"
+              class="notification-bell"
+              aria-label="Open notifications"
+            >
+              <i class="fas fa-bell"></i>
+              <span id="notificationCount" class="notification-count hidden">
+                0
+              </span>
+            </button>
+
+            <div id="notificationDropdown" class="notification-dropdown hidden">
+              <div class="notification-header">
+                <h3>Notifications</h3>
+
+                <button id="markAllNotificationsRead">Mark all as read</button>
+              </div>
+
+              <div id="notificationList" class="notification-list">
+                <p class="empty-notifications">Loading notifications...</p>
+              </div>
+
+              <div class="notification-footer">
+                <small
+                  >Notifications are automatically deleted after 30 days.</small
+                >
+              </div>
+            </div>
+          </div>
+          <div class="avatar">
+            <img
+              id="topbarProfilePicture"
+              src="https://i.pravatar.cc/100?img=12"
+              alt="Profile picture"
+            />
+            <div>
+              <strong class="user-name">John Kamau</strong><br /><small
+                class="user-role"
+                >Administrator</small
+              >
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="dev-container">
+        <!-- Clean, Inline SVG Gear Icon -->
+        <svg
+          class="dev-icon"
+          xmlns="http://w3.org"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.43l-1.003.767c-.293.224-.443.59-.4.957.012.105.017.21.017.318 0 .106-.005.213-.017.318-.043.367.107.733.4.956l1.003.768a1.125 1.125 0 0 1 .26 1.43l-1.297 2.247a1.125 1.125 0 0 1-1.37.491l-1.216-.456c-.356-.133-.751-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.43l1.004-.767c.292-.224.443-.59.4-.957a6.14 6.14 0 0 1-.017-.318c0-.106.005-.213.017-.318.043-.367-.107-.733-.4-.956l-1.004-.768a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z"
+          />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+          />
+        </svg>
+
+        <h2 class="dev-heading">Feature Under Development</h2>
+        <p class="dev-text">
+          We are currently refining this section to improve your experience.
+          Please check back soon.
+        </p>
+      </div>
+    </div>
+    <script src="notifications.js"></script>
+  </body>
+</html>

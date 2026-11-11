@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reports - Welfare & Investment Group</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon"><i class="fas fa-users"></i></div>
+        <h3>Welfare & Investment Group</h3>
+      </div>
+      <nav class="nav">
+        <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="members.html" class="admin-only" hidden
+          ><i class="fas fa-users"></i> Members</a
+        >
+        <a href="contributions.html"
+          ><i class="fas fa-hand-holding-usd"></i> Contributions</a
+        >
+        <a href="welfare.html"><i class="fas fa-heart"></i> Welfare</a>
+        <a href="fines.html"><i class="fas fa-exclamation-circle"></i> Fines</a>
+        <a href="attendance.html"
+          ><i class="fas fa-calendar-check"></i> Attendance</a
+        >
+        <a href="expenses.html" class="admin-only" hidden
+          ><i class="fas fa-receipt"></i> Expenses</a
+        >
+        <a href="transactions.html"
+          ><i class="fas fa-exchange-alt"></i> Transactions</a
+        >
+        <a href="reports.html" class="active" class="admin-only" hidden
+          ><i class="fas fa-chart-bar"></i> Reports</a
+        >
+        <a href="pdf-reports.html " class="admin-only" hidden
+          ><i class="fas fa-file-pdf"></i> PDF Reports</a
+        >
+        <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+      </nav>
+      <div class="logout">
+        <a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <h2>Reports</h2>
+        <div class="user-info">
+          <div class="notification-wrapper">
+            <button
+              type="button"
+              id="notificationBell"
+              class="notification-bell"
+              aria-label="Open notifications"
+            >
+              <i class="fas fa-bell"></i>
+              <span id="notificationCount" class="notification-count hidden">
+                0
+              </span>
+            </button>
+
+            <div id="notificationDropdown" class="notification-dropdown hidden">
+              <div class="notification-header">
+                <h3>Notifications</h3>
+
+                <button id="markAllNotificationsRead">Mark all as read</button>
+              </div>
+
+              <div id="notificationList" class="notification-list">
+                <p class="empty-notifications">Loading notifications...</p>
+              </div>
+
+              <div class="notification-footer">
+                <small
+                  >Notifications are automatically deleted after 30 days.</small
+                >
+              </div>
+            </div>
+          </div>
+          <div class="avatar">
+            <img
+              id="topbarProfilePicture"
+              src="https://i.pravatar.cc/100?img=12"
+              alt=" Profile picture"
+            />
+            <div>
+              <strong class="user-name">John Kamau</strong><br /><small
+                class="user-role"
+                >Administrator</small
+              >
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="content">
+        <div class="page-header">
+          <h2>Reports</h2>
+          <p>Generate financial and member reports</p>
+        </div>
+
+        <div class="reports-grid">
+          <div class="report-card">
+            <div class="icon blue"><i class="fas fa-calendar-alt"></i></div>
+            <h3>Monthly Report</h3>
+            <p>Financial summary for a month</p>
+          </div>
+          <div class="report-card">
+            <div class="icon green"><i class="fas fa-chart-line"></i></div>
+            <h3>Annual Report</h3>
+            <p>Yearly financial overview</p>
+          </div>
+          <div class="report-card">
+            <div class="icon orange"><i class="fas fa-user"></i></div>
+            <h3>Member Statement</h3>
+            <p>Individual member history</p>
+          </div>
+          <div class="report-card">
+            <div class="icon purple"><i class="fas fa-piggy-bank"></i></div>
+            <h3>Investment Report</h3>
+            <p>Investment contributions</p>
+          </div>
+          <div class="report-card">
+            <div class="icon teal">
+              <i class="fas fa-hand-holding-heart"></i>
+            </div>
+            <h3>Welfare Report</h3>
+            <p>Welfare contributions</p>
+          </div>
+          <div class="report-card">
+            <div class="icon red"><i class="fas fa-receipt"></i></div>
+            <h3>Expense Report</h3>
+            <p>Group expenses</p>
+          </div>
+          <div class="report-card">
+            <div class="icon indigo"><i class="fas fa-gavel"></i></div>
+            <h3>Fines Report</h3>
+            <p>Fines and penalties</p>
+          </div>
+          <div class="report-card">
+            <div class="icon pink">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3>Outstanding Report</h3>
+            <p>Unpaid contributions</p>
+          </div>
+          <div class="report-card">
+            <div class="icon cyan"><i class="fas fa-clipboard-check"></i></div>
+            <h3>Attendance Report</h3>
+            <p>Meeting attendance</p>
+          </div>
+        </div>
+
+        <div class="period-box">
+          <label>Select Report Period</label>
+          <select>
+            <option>September</option>
+          </select>
+          <select>
+            <option>2025</option>
+          </select>
+          <button class="btn">Generate Report</button>
+        </div>
+        <p class="note">
+          <i class="fas fa-info-circle"></i> Reports can be downloaded in PDF
+          format, and you can also export data to Excel.
+        </p>
+      </div>
+    </div>
+    <script src="notifications.js"></script>
+  </body>
+</html>

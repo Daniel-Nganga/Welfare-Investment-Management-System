@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expenses - Welfare & Investment Group</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon"><i class="fas fa-users"></i></div>
+        <h3>Welfare & Investment Group</h3>
+      </div>
+      <nav class="nav">
+        <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="members.html" class="admin-only" hidden
+          ><i class="fas fa-users"></i> Members</a
+        >
+        <a href="contributions.html"
+          ><i class="fas fa-hand-holding-usd"></i> Contributions</a
+        >
+        <a href="welfare.html"><i class="fas fa-heart"></i> Welfare</a>
+        <a href="fines.html"><i class="fas fa-exclamation-circle"></i> Fines</a>
+        <a href="attendance.html"
+          ><i class="fas fa-calendar-check"></i> Attendance</a
+        >
+        <a href="expenses.html" class="active" class="admin-only" hidden
+          ><i class="fas fa-receipt"></i> Expenses</a
+        >
+        <a href="transactions.html"
+          ><i class="fas fa-exchange-alt"></i> Transactions</a
+        >
+        <a href="reports.html" class="admin-only" hidden
+          ><i class="fas fa-chart-bar"></i> Reports</a
+        >
+        <a href="pdf-reports.html" class="admin-only" hidden
+          ><i class="fas fa-file-pdf"></i> PDF Reports</a
+        >
+        <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
+      </nav>
+      <div class="logout">
+        <a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      </div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <h2>Expenses</h2>
+        <div class="user-info">
+          <div class="notification-wrapper">
+            <button
+              type="button"
+              id="notificationBell"
+              class="notification-bell"
+              aria-label="Open notifications"
+            >
+              <i class="fas fa-bell"></i>
+              <span id="notificationCount" class="notification-count hidden">
+                0
+              </span>
+            </button>
+
+            <div id="notificationDropdown" class="notification-dropdown hidden">
+              <div class="notification-header">
+                <h3>Notifications</h3>
+
+                <button id="markAllNotificationsRead">Mark all as read</button>
+              </div>
+
+              <div id="notificationList" class="notification-list">
+                <p class="empty-notifications">Loading notifications...</p>
+              </div>
+
+              <div class="notification-footer">
+                <small
+                  >Notifications are automatically deleted after 30 days.</small
+                >
+              </div>
+            </div>
+          </div>
+          <div class="avatar">
+            <img
+              id="topbarProfilePicture"
+              src="https://i.pravatar.cc/100?img=12"
+              alt=" Profile picture"
+            />
+            <div>
+              <strong style="font-size: 0.9rem">John Kamau</strong><br /><small
+                style="color: #64748b"
+                >Administrator</small
+              >
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="content">
+        <div class="page-header">
+          <div>
+            <h2>Expenses</h2>
+            <p>Record and track group expenses</p>
+          </div>
+          <button class="btn btn-primary admin-only" hidden>
+            <i class="fas fa-plus"></i> Add Expense
+          </button>
+        </div>
+
+        <div class="filters">
+          <input type="text" placeholder="Search description..." />
+          <select>
+            <option>All Categories</option>
+          </select>
+          <select>
+            <option>All Months</option>
+          </select>
+          <select>
+            <option>2025</option>
+          </select>
+          <button class="btn btn-primary">
+            <i class="fas fa-filter"></i> Filter
+          </button>
+        </div>
+
+        <div class="card">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Date</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Amount</th>
+                <th>Method</th>
+                <th>Recorded By</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <td>2025-09-20</td>
+                <td>Transport</td>
+                <td>Meeting transport</td>
+                <td>KSh 2,000</td>
+                <td>M-Pesa</td>
+                <td>John Kamau</td>
+                <td class="actions">
+                  <a href="#"><i class="fas fa-edit"></i></a
+                  ><a href="#"><i class="fas fa-eye"></i></a>
+                </td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <td>2025-09-18</td>
+                <td>Stationery</td>
+                <td>Office supplies</td>
+                <td>KSh 1,250</td>
+                <td>Bank</td>
+                <td>Mary Wanjiku</td>
+                <td class="actions">
+                  <a href="#"><i class="fas fa-edit"></i></a
+                  ><a href="#"><i class="fas fa-eye"></i></a>
+                </td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>2025-09-15</td>
+                <td>Events</td>
+                <td>Annual meeting</td>
+                <td>KSh 5,000</td>
+                <td>M-Pesa</td>
+                <td>Peter Mwangi</td>
+                <td class="actions">
+                  <a href="#"><i class="fas fa-edit"></i></a
+                  ><a href="#"><i class="fas fa-eye"></i></a>
+                </td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <td>2025-09-10</td>
+                <td>Administration</td>
+                <td>Internet & phone</td>
+                <td>KSh 3,500</td>
+                <td>Bank</td>
+                <td>Grace Achieng</td>
+                <td class="actions">
+                  <a href="#"><i class="fas fa-edit"></i></a
+                  ><a href="#"><i class="fas fa-eye"></i></a>
+                </td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <td>2025-09-05</td>
+                <td>Bank Charges</td>
+                <td>Bank fees</td>
+                <td>KSh 750</td>
+                <td>Bank</td>
+                <td>Samuel Njoroge</td>
+                <td class="actions">
+                  <a href="#"><i class="fas fa-edit"></i></a
+                  ><a href="#"><i class="fas fa-eye"></i></a>
+                </td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <td>2025-09-02</td>
+                <td>Welfare Support</td>
+                <td>Member welfare</td>
+                <td>KSh 4,200</td>
+                <td>M-Pesa</td>
+                <td>David Kiplagat</td>
+                <td class="actions">
+                  <a href="#"><i class="fas fa-edit"></i></a
+                  ><a href="#"><i class="fas fa-eye"></i></a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="footer-bar">
+            <span>Showing 1 to 6 of 6 records</span>
+            <strong>Total Expenses: KSh 16,700</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="notifications.js"></script>
+  </body>
+</html>
