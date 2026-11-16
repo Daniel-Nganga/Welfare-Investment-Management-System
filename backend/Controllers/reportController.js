@@ -4,6 +4,25 @@ const PaymentInvestmentWelfare = require("../models/InvestmentWelfarepaymentMode
 const FinePayment = require("../models/finePaymentModel");
 const Fine = require("../models/FineModel");
 
+// Helper for "Select Report Period" (e.g., ?month=9&year=2025)
+const buildDateRange = (month, year, field) => {
+  if (!year) return {};
+  if (month) {
+    return {
+      [field]: {
+        $gte: new Date(year, month - 1, 1),
+        $lte: new Date(year, month, 0, 23, 59, 59, 999),
+      },
+    };
+  }
+  // Annual filter if only year is provided
+  return {
+    [field]: {
+      $gte: new Date(year, 0, 1),
+      $lte: new Date(year, 11, 31, 23, 59, 59, 999),
+    },
+  };
+};
 //dashboard report
 
 exports.getDashboardReport = async (req, res) => {
@@ -447,6 +466,72 @@ exports.getFinancialSummary = async (req, res) => {
 
     res.status(500).json({
       message: "Failed to retrieve financial summary",
+      error: error.message,
+    });
+  }
+};
+
+// 6. MEMBER STATEMENT
+exports.getMemberStatement = async (req, res) => {
+  try {
+    const { memberId } = req.params;
+    const [member, payments, fines, finePayments] = await Promise.all([
+      User.findById(memberId).select(
+        "memberNumber fullName phoneNumber status",
+      ),
+      PaymentInvestmentWelfare.find({ member: memberId }).sort({
+        paymentDate: -1,
+      }),
+      Fine.find({ member: memberId }).sort({ createdAt: -1 }),
+      FinePayment.find({ member: memberId }).sort({ paymentDate: -1 }),
+    ]);
+
+    if (!member) return res.status(404).json({ message: "Member not found" });
+
+    res.status(200).json({
+      message: "Member statement retrieved successfully",
+      member,
+      payments,
+      fines,
+      finePayments,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to retrieve member statement",
+      error: error.message,
+    });
+  }
+};
+
+// 7. OUTSTANDING REPORT (Unpaid contributions & fines)
+exports.getOutstandingReport = async (req, res) => {
+  try {
+    const { month, year } = req.query;
+    const members = await User.find({ status: "active" }).select(
+      "memberNumber fullName phoneNumber",
+    );
+    const payments = await PaymentInvestmentWelfare.find(
+      buildDateRange(month, year, "paymentDate"),
+    );
+    const unpaidFines = await Fine.find({ status: { $ne: "paid" } }).populate(
+      "member",
+      "memberNumber fullName",
+    );
+
+    // Find active members who have not made a contribution in the selected period
+    const paidMemberIds = new Set(payments.map((p) => String(p.member)));
+    const unpaidMembers = members.filter(
+      (m) => !paidMemberIds.has(String(m._id)),
+    );
+
+    res.status(200).json({
+      message: "Outstanding report retrieved successfully",
+      unpaidMembers,
+      unpaidFines,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to retrieve outstanding report",
       error: error.message,
     });
   }

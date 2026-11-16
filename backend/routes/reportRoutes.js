@@ -6,6 +6,9 @@ const {
   getFineReport,
   getExpenseReport,
   getFinancialSummary,
+  getMemberStatement,
+  getOutstandingReport,
+  getAttendanceReport,
 } = require("../Controllers/reportController");
 const {
   getFineContributionReport,
@@ -21,7 +24,7 @@ const router = express.Router();
 // Dashboard
 router.get("/dashboard", protectPayment, adminOnly, getDashboardReport);
 
-// Payments
+// Payments (Supports ?type=Investment or ?type=Welfare & ?month=9&year=2025)
 router.get("/payments", protectPayment, adminOnly, getPaymentReport);
 
 // Fines
@@ -30,7 +33,7 @@ router.get("/fines", protectPayment, adminOnly, getFineReport);
 // Expenses
 router.get("/expenses", protectPayment, adminOnly, getExpenseReport);
 
-// Financial summary
+// Financial summary (Monthly & Annual Reports)
 router.get(
   "/financial-summary",
   protectPayment,
@@ -38,7 +41,21 @@ router.get(
   getFinancialSummary,
 );
 
-// Fine contribution JSON
+// Member Statement
+router.get(
+  "/member-statement/:memberId",
+  protectPayment,
+  adminOnly,
+  getMemberStatement,
+);
+
+// Outstanding Report
+router.get("/outstanding", protectPayment, adminOnly, getOutstandingReport);
+
+// Attendance Report
+//router.get("/attendance", protectPayment, adminOnly, getAttendanceReport);
+
+// Fine contribution JSON & PDFs
 router.get(
   "/fine-contributions",
   protectPayment,
@@ -52,7 +69,6 @@ router.get(
   adminOnly,
   generateMonthlyContributionPDF,
 );
-
 router.get(
   "/fine-contributions/pdf",
   protectPayment,

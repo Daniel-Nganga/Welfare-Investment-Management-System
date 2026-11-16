@@ -66,7 +66,7 @@ async function loadContributions() {
     const endpoint =
       currentRole === "admin"
         ? `${API_BASE}/saving/all`
-        : `${API_BASE}/saving/member`;
+        : `${API_BASE}/saving/member/${userId}`;
 
     const response = await fetch(endpoint, { headers });
 

@@ -1513,6 +1513,94 @@ h3 {
   align-self: flex-start;
   padding: 5px;
 }
+/* --- Mid Card Professional Layout --- */
+.mid-card.teal {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.mid-card.teal .icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  background: #ccfbf1;
+  color: #0d9488;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.mid-card.teal > div:last-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.mid-card.teal h4 {
+  margin: 0 0 4px 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.mid-card.teal .value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+
+/* --- Arrears Breakdown Badges --- */
+.mid-card.teal .sub {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: #475569;
+}
+
+.owed-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+
+  font-weight: 500;
+  white-space: nowrap;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.owed-pill strong {
+  color: #0f172a;
+  font-weight: 800;
+  color: #b91c1c;
+}
+
+.owed-pill.fine {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+.owed-pill.fine strong {
+  color: #991b1b;
+}
+
+.owed-pill.clear {
+  background: #ecfdf5;
+  color: #047857;
+}
 
 .empty-notifications {
   text-align: center;
@@ -1528,14 +1616,223 @@ h3 {
   color: #777;
 }
 
-@media (max-width: 480px) {
-  .notification-dropdown {
-    position: fixed;
-    top: 65px;
-    right: 10px;
-    left: 10px;
-    width: auto;
-    max-width: none;
+/* ========================================
+   CHARTS ROW & CARD CONTAINERS
+   ======================================== */
+.charts-row {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 24px;
+  margin-top: 24px;
+  align-items: stretch;
+}
+
+.chart-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.chart-card h3 {
+  margin: 0 0 20px 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ========================================
+   MONTHLY BAR CHART
+   ======================================== */
+#monthlyContributionChart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 230px;
+  padding: 20px 8px 0;
+  border-bottom: 1px solid #cbd5e1;
+  background-image: linear-gradient(to top, #f1f5f9 1px, transparent 1px);
+  background-size: 100% 25%;
+  gap: 6px;
+}
+
+.bar-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  height: 100%;
+  min-width: 0;
+}
+
+.bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4px;
+  height: 100%;
+  width: 100%;
+}
+
+.bar {
+  width: 11px;
+  min-height: 3px;
+  border-radius: 4px 4px 0 0;
+  transition:
+    height 0.4s ease,
+    filter 0.2s ease;
+  cursor: pointer;
+}
+
+.bar:hover {
+  filter: brightness(0.9);
+}
+
+.bar.invest {
+  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.bar.welfare {
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+}
+
+.bar-label {
+  margin-top: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+/* ========================================
+   MONTHLY TARGET SUMMARY BOX
+   ======================================== */
+#monthlyContributionSummary > div {
+  margin-top: 18px !important;
+  padding: 14px 16px !important;
+  background: #f8fafc !important;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px !important;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+#monthlyContributionSummary p {
+  margin: 0;
+  color: #475569;
+  font-size: 0.82rem;
+}
+
+#monthlyContributionSummary hr {
+  display: none;
+}
+
+/* ========================================
+   CONTRIBUTION PIE CHART & LEGEND
+   ======================================== */
+.pie-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  flex: 1;
+  padding: 10px 0;
+}
+
+#contributionPie {
+  width: 185px;
+  height: 185px;
+  border-radius: 50%;
+  background: #e2e8f0;
+  position: relative;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.05);
+  flex-shrink: 0;
+}
+
+/* Creates a clean modern donut hole in the center */
+#contributionPie::after {
+  content: "";
+  position: absolute;
+  inset: 38px;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+}
+
+#PieLegend {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#PieLegend > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  color: #334155;
+}
+
+#PieLegend span {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  display: inline-block;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+#PieLegend small {
+  color: #64748b;
+  font-weight: 500;
+  margin-left: auto;
+  padding-left: 12px;
+}
+
+#PieLegend hr {
+  border: 0;
+  border-top: 1px solid #e2e8f0;
+  margin: 4px 0;
+}
+
+#PieLegend > strong {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 4px 0;
+  font-size: 0.92rem;
+  color: #0f172a;
+}
+
+/* ========================================
+   RESPONSIVE BREAKPOINTS
+   ======================================== */
+@media (max-width: 992px) {
+  .charts-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .bar {
+    width: 7px;
+  }
+  .bar-label {
+    font-size: 0.68rem;
   }
 }
 
