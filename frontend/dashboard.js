@@ -46,7 +46,7 @@ async function loadDashboard() {
       ];
     } else {
       requests = [
-        fetch("/api/saving/member", { headers }),
+        fetch(`/api/saving/member/${userId}`, { headers }),
         fetch(`/api/fines/member/${userId}`, { headers }),
       ];
     }
@@ -76,7 +76,9 @@ async function loadDashboard() {
     // Normalize records to arrays
     const allPayments = Array.isArray(paymentsData.payments)
       ? paymentsData.payments
-      : [];
+      : Array.isArray(paymentsData.memberPayments)
+        ? paymentsData.memberPayments
+        : [];
     const allFines = Array.isArray(finesData.fines) ? finesData.fines : [];
     const expenses = Array.isArray(expensesData.expenses)
       ? expensesData.expenses
@@ -141,14 +143,46 @@ async function loadDashboard() {
       actualRole === "admin"
         ? `KSh ${totalExpenses.toLocaleString()}`
         : "Admin only";
-    document.getElementById("TotalBalance").textContent =
-      actualRole === "admin" ? `KSh ${totalBalance.toLocaleString()}` : "—";
+
     const topbarImage = document.getElementById("topbarProfilePicture");
 
     if (topbarImage) {
       topbarImage.src = user.profilePicture
         ? user.profilePicture
         : "https://i.pravatar.cc/100?img=12";
+    }
+
+    // --- Calculate Owed Balances (Sept 2025 to Date) ---
+    const owed = calculateOwedBalances(payments, fines, members, actualRole);
+
+    const balanceEl = document.getElementById("TotalBalance");
+    if (balanceEl) {
+      const card = balanceEl.closest(".mid-card");
+      const titleEl = card ? card.querySelector("h4") : null;
+      const subEl = card ? card.querySelector(".sub") : null;
+
+      if (actualRole === "admin") {
+        if (titleEl) titleEl.textContent = "Total Balance";
+        balanceEl.textContent = `KSh ${totalBalance.toLocaleString()}`;
+        if (subEl) {
+          subEl.innerHTML = `<span class="owed-pill clear">Available</span>`;
+        }
+      } else {
+        if (titleEl) titleEl.textContent = "Balance Owed";
+        balanceEl.textContent = `KSh ${owed.totalOwed.toLocaleString()}`;
+
+        if (subEl) {
+          if (owed.totalOwed === 0) {
+            subEl.innerHTML = `<span class="owed-pill clear">✓ Up to date</span>`;
+          } else {
+            subEl.innerHTML = `
+              <span class="owed-pill">Inv: <strong>KSh ${owed.unpaidInvestment.toLocaleString()}</strong></span>
+              <span class="owed-pill">Wel: <strong>KSh ${owed.unpaidWelfare.toLocaleString()}</strong></span>
+              <span class="owed-pill fine">Fines: <strong>KSh ${owed.unpaidFines.toLocaleString()}</strong></span>
+            `;
+          }
+        }
+      }
     }
 
     // --- Build & Render Transactions Stack ---
@@ -185,7 +219,9 @@ async function loadDashboard() {
     populateRecentTransactionsTable(transactions.slice(0, 4));
 
     updatePieChartBreakdown(totalInvestment, totalWelfare);
-    buildMonthlyBarChart(payments);
+
+    // Build charts using actual payments and member records
+    buildMonthlyBarChart(payments, members, actualRole);
 
     // Toggle view elements
     document
@@ -280,16 +316,116 @@ function populateRecentTransactionsTable(transactions) {
   });
 }
 
-// --- HELPER FUNCTION: DYNAMIC CSS MONTHLY BAR CHART POPULATION ---
-function buildMonthlyBarChart(payments) {
-  const chartContainer = document.querySelector(".bar-chart");
+function calculateOwedBalances(payments, fines, members, role) {
+  const startYear = 2025;
+  const startMonth = 8; // September (0-indexed: Jan=0, Sept=8)
+  const now = new Date();
+
+  const elapsedMonths = Math.max(
+    1,
+    (now.getFullYear() - startYear) * 12 + (now.getMonth() - startMonth) + 1,
+  );
+
+  const activeMembersCount =
+    role === "admin"
+      ? members.filter(
+          (m) => !m.status || String(m.status).toLowerCase() === "active",
+        ).length
+      : 1;
+
+  const expectedInvestment =
+    elapsedMonths * CONTRIBUTION_RULES.investment * activeMembersCount;
+  const expectedWelfare =
+    elapsedMonths * CONTRIBUTION_RULES.welfare * activeMembersCount;
+
+  const sept2025 = new Date(2025, 8, 1);
+
+  const paidInvestment = payments.reduce((sum, p) => {
+    const pDate = new Date(p.paymentDate || p.createdAt);
+    const type = String(p.paymentType || "").toLowerCase();
+    if (pDate >= sept2025 && (type === "investment" || type === "savings")) {
+      return sum + Number(p.amount || 0);
+    }
+    return sum;
+  }, 0);
+
+  const paidWelfare = payments.reduce((sum, p) => {
+    const pDate = new Date(p.paymentDate || p.createdAt);
+    const type = String(p.paymentType || "").toLowerCase();
+    if (pDate >= sept2025 && type === "welfare") {
+      return sum + Number(p.amount || 0);
+    }
+    return sum;
+  }, 0);
+
+  const unpaidInvestment = Math.max(0, expectedInvestment - paidInvestment);
+  const unpaidWelfare = Math.max(0, expectedWelfare - paidWelfare);
+
+  const unpaidFines = fines.reduce((sum, f) => {
+    const status = String(f.paymentStatus || "pending").toLowerCase();
+    return status !== "paid" ? sum + Number(f.amount || 0) : sum;
+  }, 0);
+
+  const totalOwed = unpaidInvestment + unpaidWelfare + unpaidFines;
+
+  return {
+    elapsedMonths,
+    unpaidInvestment,
+    unpaidWelfare,
+    unpaidFines,
+    totalOwed,
+  };
+}
+
+// ========================================
+// OFFICIAL MONTHLY CONTRIBUTION RULES
+// ========================================
+
+const CONTRIBUTION_RULES = {
+  investment: 1400,
+  welfare: 250,
+};
+
+const formatMoney = (amount) =>
+  `KSh ${Number(amount || 0).toLocaleString("en-KE")}`;
+
+// ========================================
+// MONTHLY CONTRIBUTION BAR CHART
+// ========================================
+
+function buildMonthlyBarChart(payments, members, role) {
+  const chartContainer = document.getElementById("monthlyContributionChart");
+
+  const summaryContainer = document.getElementById(
+    "monthlyContributionSummary",
+  );
+
   if (!chartContainer) return;
 
-  // 1. Group transaction sums strictly by month indexes
+  const currentYear = new Date().getFullYear();
+
+  // Count active members for the group target.
+  // A member dashboard uses one member as its target.
+  const activeMembers =
+    role === "admin"
+      ? members.filter(
+          (member) =>
+            !member.status || String(member.status).toLowerCase() === "active",
+        ).length
+      : 1;
+
+  // Expected monthly group contributions
+  const investmentTarget = activeMembers * CONTRIBUTION_RULES.investment;
+
+  const welfareTarget = activeMembers * CONTRIBUTION_RULES.welfare;
+
+  const totalTarget = investmentTarget + welfareTarget;
+
   const monthlyData = Array.from({ length: 12 }, () => ({
     investment: 0,
     welfare: 0,
   }));
+
   const monthLabels = [
     "Jan",
     "Feb",
@@ -305,61 +441,180 @@ function buildMonthlyBarChart(payments) {
     "Dec",
   ];
 
-  payments.forEach((p) => {
-    if (!p.paymentDate && !p.createdAt) return;
-    const date = new Date(p.paymentDate || p.createdAt);
-    const monthIndex = date.getMonth(); // 0 to 11
-    if (monthIndex < 0 || monthIndex > 11) return;
+  // Read actual contribution records
+  payments.forEach((payment) => {
+    const paymentDate = payment.paymentDate || payment.createdAt;
 
-    const type = String(p.paymentType || "").toLowerCase();
-    const amount = Number(p.amount || 0);
+    if (!paymentDate) return;
+
+    const date = new Date(paymentDate);
+
+    if (isNaN(date.getTime())) return;
+
+    // Only display payments from the current year
+    if (date.getFullYear() !== currentYear) return;
+
+    const month = date.getMonth();
+
+    const type = String(payment.paymentType || "").toLowerCase();
+
+    const amount = Number(payment.amount || 0);
 
     if (type === "investment" || type === "savings") {
-      monthlyData[monthIndex].investment += amount;
-    } else if (type === "welfare") {
-      monthlyData[monthIndex].welfare += amount;
+      monthlyData[month].investment += amount;
+    }
+
+    if (type === "welfare") {
+      monthlyData[month].welfare += amount;
     }
   });
 
-  // 2. Find peak high value scale bounds to compute percentage heights cleanly
-  let maxVal = 1000; // Safe baseline denominator minimum
-  monthlyData.forEach((m) => {
-    if (m.investment > maxVal) maxVal = m.investment;
-    if (m.welfare > maxVal) maxVal = m.welfare;
-  });
+  // Determine chart scale using actual and expected amounts
+  const maxValue = Math.max(
+    investmentTarget,
+    welfareTarget,
+    ...monthlyData.map((m) => Math.max(m.investment, m.welfare)),
+    1,
+  );
 
-  // 3. Rebuild inner DOM structure dynamically mapping custom inline style heights
   chartContainer.innerHTML = "";
 
   monthlyData.forEach((data, index) => {
-    const investHeight = Math.max(
-      2,
-      Math.round((data.investment / maxVal) * 100),
-    );
-    const welfareHeight = Math.max(
-      2,
-      Math.round((data.welfare / maxVal) * 100),
-    );
+    const investmentHeight = (data.investment / maxValue) * 100;
 
-    // Maintain your identical styling layout block signatures cleanly
+    const welfareHeight = (data.welfare / maxValue) * 100;
+
+    const investmentPercentage = investmentTarget
+      ? Math.round((data.investment / investmentTarget) * 100)
+      : 0;
+
+    const welfarePercentage = welfareTarget
+      ? Math.round((data.welfare / welfareTarget) * 100)
+      : 0;
+
     const barGroup = document.createElement("div");
+
     barGroup.className = "bar-group";
+
     barGroup.innerHTML = `
       <div class="bars">
-        <div class="bar invest" style="height: ${investHeight}%;" title="Investment: KSh ${data.investment.toLocaleString()}"></div>
-        <div class="bar welfare" style="height: ${welfareHeight}%;" title="Welfare: KSh ${data.welfare.toLocaleString()}"></div>
+
+        <div
+          class="bar invest"
+          style="height: ${investmentHeight}%"
+          title="Investment: ${formatMoney(data.investment)}
+Target: ${formatMoney(investmentTarget)}
+Progress: ${investmentPercentage}%">
+        </div>
+
+        <div
+          class="bar welfare"
+          style="height: ${welfareHeight}%"
+          title="Welfare: ${formatMoney(data.welfare)}
+Target: ${formatMoney(welfareTarget)}
+Progress: ${welfarePercentage}%">
+        </div>
+
       </div>
-      <span class="bar-label">${monthLabels[index]}</span>
+
+      <span class="bar-label">
+        ${monthLabels[index]}
+      </span>
     `;
+
     chartContainer.appendChild(barGroup);
   });
+
+  // Contribution target summary
+  if (summaryContainer) {
+    summaryContainer.innerHTML = `
+      <div style="
+        margin-top: 15px;
+        padding: 12px;
+        background: #f8fafc;
+        border-radius: 8px;
+        font-size: 0.85rem;
+      ">
+
+        <strong>${currentYear} Monthly Targets</strong>
+
+        <p>
+          Investment:
+          ${formatMoney(investmentTarget)}
+        </p>
+
+        <p>
+          Welfare:
+          ${formatMoney(welfareTarget)}
+        </p>
+
+        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 8px 0">
+
+        <strong>
+          Total Expected:
+          ${formatMoney(totalTarget)}
+        </strong>
+
+       
+
+      </div>
+    `;
+  }
 }
 
-// --- HELPER FUNCTION: PIE CHART BREAKDOWN STUB ---
+// ========================================
+// CONTRIBUTION PIE CHART
+// ========================================
+
 function updatePieChartBreakdown(totalInvestment, totalWelfare) {
-  // Your HTML markup currently doesn't possess a donut/pie chart canvas element container yet.
-  // We keep this call safe here as a operational hook so your console doesn't crash on reference limits.
-  console.log(
-    `Financial Proportions Logged -> Investment: KSh ${totalInvestment} | Welfare: KSh ${totalWelfare}`,
-  );
+  const pie = document.getElementById("contributionPie");
+
+  const legend = document.getElementById("PieLegend");
+
+  const investment = Number(totalInvestment || 0);
+  const welfare = Number(totalWelfare || 0);
+
+  const total = investment + welfare;
+
+  const investmentPercentage = total > 0 ? (investment / total) * 100 : 0;
+
+  const welfarePercentage = total > 0 ? (welfare / total) * 100 : 0;
+
+  if (pie) {
+    pie.style.background =
+      total > 0
+        ? `conic-gradient(
+          #3b82f6 0% ${investmentPercentage}%,
+          #10b981 ${investmentPercentage}% 100%
+        )`
+        : "#e2e8f0";
+  }
+
+  if (legend) {
+    legend.innerHTML = `
+      <div>
+        <span style="background:#3b82f6"></span>
+        Investment
+
+        <strong>${investmentPercentage.toFixed(1)}%</strong>
+
+        <small>${formatMoney(investment)}</small>
+      </div>
+
+      <div>
+        <span style="background:#10b981"></span>
+        Welfare
+
+        <strong>${welfarePercentage.toFixed(1)}%</strong>
+
+        <small>${formatMoney(welfare)}</small>
+      </div>
+
+      <hr>
+
+      <strong>
+        Total Contributions: ${formatMoney(total)}
+      </strong>
+    `;
+  }
 }

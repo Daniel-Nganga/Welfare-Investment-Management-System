@@ -119,7 +119,7 @@
             <div>
               <h4>Total Investment</h4>
               <div class="value" id="TotalInvestment">KSh 0</div>
-              <div class="sub">This Month</div>
+              <div class="sub">All Time</div>
             </div>
           </div>
           <div class="stat-card orange">
@@ -127,7 +127,7 @@
             <div>
               <h4>Total Welfare</h4>
               <div class="value" id="TotalWelfare">KSh 0</div>
-              <div class="sub">This Month</div>
+              <div class="sub">All Time</div>
             </div>
           </div>
           <div class="admin-only stat-card red" hidden>
@@ -147,7 +147,7 @@
             <div>
               <h4>Total Fines</h4>
               <div class="value" id="TotalFines">KSh 0</div>
-              <div class="sub">This Month</div>
+              <div class="sub">All Time</div>
             </div>
           </div>
           <div class="mid-card teal">
@@ -161,112 +161,63 @@
         </div>
 
         <!-- Charts -->
+
+        <!-- Charts -->
+        <!-- Charts -->
         <div class="charts-row">
+          <!-- Monthly Bar Chart Card -->
           <div class="chart-card">
-            <h3>Monthly Contributions</h3>
-            <div class="bar-chart">
-              <!-- Simplified static bars for demo -->
-              <div class="bar-group">
-                <div class="bars">
-                  <div class="bar invest" style="height: 60%"></div>
-                  <div class="bar welfare" style="height: 40%"></div>
-                </div>
-                <span class="bar-label">Jan</span>
-              </div>
-              <div class="bar-group">
-                <div class="bars">
-                  <div class="bar invest" style="height: 75%"></div>
-                  <div class="bar welfare" style="height: 50%"></div>
-                </div>
-                <span class="bar-label">Feb</span>
-              </div>
-              <div class="bar-group">
-                <div class="bars">
-                  <div class="bar invest" style="height: 55%"></div>
-                  <div class="bar welfare" style="height: 35%"></div>
-                </div>
-                <span class="bar-label">Mar</span>
-              </div>
-              <div class="bar-group">
-                <div class="bars">
-                  <div class="bar invest" style="height: 90%"></div>
-                  <div class="bar welfare" style="height: 60%"></div>
-                </div>
-                <span class="bar-label">Apr</span>
-              </div>
-              <div class="bar-group">
-                <div class="bars">
-                  <div class="bar invest" style="height: 70%"></div>
-                  <div class="bar welfare" style="height: 45%"></div>
-                </div>
-                <span class="bar-label">May</span>
-              </div>
-              <div class="bar-group">
-                <div class="bars">
-                  <div class="bar invest" style="height: 85%"></div>
-                  <div class="bar welfare" style="height: 55%"></div>
-                </div>
-                <span class="bar-label">Jun</span>
-              </div>
-              <div class="bar-group">
-                <div class="bars">
-                  <div class="bar invest" style="height: 65%"></div>
-                  <div class="bar welfare" style="height: 40%"></div>
-                </div>
-                <span class="bar-label">Jul</span>
-              </div>
-              <div class="bar-group">
-                <div class="bars">
-                  <div class="bar invest" style="height: 95%"></div>
-                  <div class="bar welfare" style="height: 70%"></div>
-                </div>
-                <span class="bar-label">Aug</span>
-              </div>
-              <div class="bar-group">
-                <div class="bars">
-                  <div class="bar invest" style="height: 80%"></div>
-                  <div class="bar welfare" style="height: 50%"></div>
-                </div>
-                <span class="bar-label">Sep</span>
-              </div>
-              <div class="bar-group">
-                <div class="bars">
-                  <div class="bar invest" style="height: 100%"></div>
-                  <div class="bar welfare" style="height: 65%"></div>
-                </div>
-                <span class="bar-label">Oct</span>
-              </div>
-              <div class="bar-group">
-                <div class="bars">
-                  <div class="bar invest" style="height: 70%"></div>
-                  <div class="bar welfare" style="height: 45%"></div>
-                </div>
-                <span class="bar-label">Nov</span>
-              </div>
-              <div class="bar-group">
-                <div class="bars">
-                  <div class="bar invest" style="height: 88%"></div>
-                  <div class="bar welfare" style="height: 58%"></div>
-                </div>
-                <span class="bar-label">Dec</span>
-              </div>
-            </div>
-            <div style="margin-top: 12px; font-size: 0.85rem; color: #64748b">
-              <span style="color: #3b82f6">■</span> Investment &nbsp;
-              <span style="color: #10b981">■</span> Welfare
-            </div>
+            <h3>
+              Monthly Contributions
+              <span
+                style="
+                  display: flex;
+                  gap: 14px;
+                  font-size: 0.78rem;
+                  font-weight: 500;
+                  color: #64748b;
+                "
+              >
+                <span
+                  style="display: inline-flex; align-items: center; gap: 5px"
+                >
+                  <i
+                    style="
+                      width: 10px;
+                      height: 10px;
+                      border-radius: 2px;
+                      background: #3b82f6;
+                      display: inline-block;
+                    "
+                  ></i>
+                  Investment
+                </span>
+                <span
+                  style="display: inline-flex; align-items: center; gap: 5px"
+                >
+                  <i
+                    style="
+                      width: 10px;
+                      height: 10px;
+                      border-radius: 2px;
+                      background: #10b981;
+                      display: inline-block;
+                    "
+                  ></i>
+                  Welfare
+                </span>
+              </span>
+            </h3>
+            <div id="monthlyContributionChart"></div>
+            <div id="monthlyContributionSummary"></div>
           </div>
+
+          <!-- Contribution Breakdown Pie Card -->
           <div class="chart-card">
             <h3>Contribution Breakdown</h3>
-            <div class="pie-container">
-              <div class="pie"></div>
-              <div class="legend" id="PieLegend">
-                <!-- These values will be fully dynamic now -->
-                <div>
-                  <span style="background: #3b82f6"></span> Investment 0%
-                </div>
-                <div><span style="background: #10b981"></span> Welfare 0%</div>
-              </div>
+            <div class="pie-wrapper">
+              <div id="contributionPie"></div>
+              <div id="PieLegend"></div>
             </div>
           </div>
         </div>
@@ -293,6 +244,7 @@
       </div>
     </div>
     <script src="dashboard.js"></script>
+
     <script src="notifications.js"></script>
   </body>
 </html>

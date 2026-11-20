@@ -15,7 +15,7 @@ const router = express.Router();
 
 router.post("/add", protectPayment, adminOnly, addPayment);
 router.get("/all", protectPayment, adminOnly, getPayments);
-router.get("/member", protectPayment, getMemberPayment);
+router.get("/member/:id", protectPayment, getMemberPayment);
 // get my payments for logged in member
 router.get("/my-payments", protectPayment, getMyPayments);
 router.put("/:id", protectPayment, adminOnly, updatePayment);
