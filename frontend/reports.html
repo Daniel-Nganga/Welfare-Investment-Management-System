@@ -9,12 +9,13 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     />
     <link rel="stylesheet" href="style.css" />
+    <script src="https://sheetjs.com"></script>
   </head>
   <body>
     <aside class="sidebar">
       <div class="sidebar-header">
         <div class="logo-icon"><i class="fas fa-users"></i></div>
-        <h3>Welfare & Investment Group</h3>
+        <h3 id="organizationNameDisplay"></h3>
       </div>
       <nav class="nav">
         <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
@@ -35,16 +36,16 @@
         <a href="transactions.html"
           ><i class="fas fa-exchange-alt"></i> Transactions</a
         >
-        <a href="reports.html" class="active" class="admin-only" hidden
-          ><i class="fas fa-chart-bar"></i> Reports</a
-        >
-        <a href="pdf-reports.html " class="admin-only" hidden
+        <a href="reports.html" class="active admin-only" hidden>
+          <i class="fas fa-chart-bar"></i> Reports
+        </a>
+        <a href="pdf-reports.html" class="admin-only" hidden
           ><i class="fas fa-file-pdf"></i> PDF Reports</a
         >
         <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
       </nav>
-      <div class="logout">
-        <a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      <div class="logout" id="logoutBtn">
+        <a><i class="fas fa-sign-out-alt"></i> Logout</a>
       </div>
     </aside>
 
@@ -90,10 +91,8 @@
               alt=" Profile picture"
             />
             <div>
-              <strong class="user-name">John Kamau</strong><br /><small
-                class="user-role"
-                >Administrator</small
-              >
+              <strong class="user-name" id="memberProfileName"></strong
+              ><br /><small class="user-role" id="memberRole"></small>
             </div>
           </div>
         </div>
@@ -106,67 +105,137 @@
         </div>
 
         <div class="reports-grid">
-          <div class="report-card">
+          <div class="report-card" data-report="Monthly Report">
             <div class="icon blue"><i class="fas fa-calendar-alt"></i></div>
             <h3>Monthly Report</h3>
             <p>Financial summary for a month</p>
           </div>
-          <div class="report-card">
+          <div class="report-card" data-report="Annual Report">
             <div class="icon green"><i class="fas fa-chart-line"></i></div>
             <h3>Annual Report</h3>
             <p>Yearly financial overview</p>
           </div>
-          <div class="report-card">
+          <div class="report-card" data-report="Member Statement">
             <div class="icon orange"><i class="fas fa-user"></i></div>
             <h3>Member Statement</h3>
             <p>Individual member history</p>
           </div>
-          <div class="report-card">
+          <div class="report-card" data-report="Investment Report">
             <div class="icon purple"><i class="fas fa-piggy-bank"></i></div>
             <h3>Investment Report</h3>
             <p>Investment contributions</p>
           </div>
-          <div class="report-card">
+          <div class="report-card" data-report="Welfare Report">
             <div class="icon teal">
               <i class="fas fa-hand-holding-heart"></i>
             </div>
             <h3>Welfare Report</h3>
             <p>Welfare contributions</p>
           </div>
-          <div class="report-card">
+          <div class="report-card" data-report="Expense Report">
             <div class="icon red"><i class="fas fa-receipt"></i></div>
             <h3>Expense Report</h3>
             <p>Group expenses</p>
           </div>
-          <div class="report-card">
+          <div class="report-card" data-report="Fines Report">
             <div class="icon indigo"><i class="fas fa-gavel"></i></div>
             <h3>Fines Report</h3>
             <p>Fines and penalties</p>
           </div>
-          <div class="report-card">
+          <div class="report-card" data-report="Outstanding Report">
             <div class="icon pink">
               <i class="fas fa-exclamation-triangle"></i>
             </div>
             <h3>Outstanding Report</h3>
             <p>Unpaid contributions</p>
           </div>
-          <div class="report-card">
+          <div class="report-card" data-report="Attendance Report">
             <div class="icon cyan"><i class="fas fa-clipboard-check"></i></div>
             <h3>Attendance Report</h3>
             <p>Meeting attendance</p>
           </div>
         </div>
 
-        <div class="period-box">
-          <label>Select Report Period</label>
-          <select>
-            <option>September</option>
-          </select>
-          <select>
-            <option>2025</option>
-          </select>
-          <button class="btn">Generate Report</button>
+        <!-- REPORT MODAL -->
+        <div id="reportModal" class="report-modal">
+          <div class="report-modal-content">
+            <!-- HEADER -->
+            <div class="report-modal-header">
+              <div>
+                <h2 id="modalReportTitle">Monthly Report</h2>
+                <p>Welfare & Investment Management System</p>
+              </div>
+
+              <button type="button" id="closeReportModal" class="close-modal">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+
+            <!-- FILTERS -->
+            <div class="report-controls">
+              <div class="report-filter">
+                <label for="monthSelect">Select Month</label>
+                <select id="monthSelect">
+                  <option value="1">January</option>
+                  <option value="2">February</option>
+                  <option value="3">March</option>
+                  <option value="4">April</option>
+                  <option value="5">May</option>
+                  <option value="6">June</option>
+                  <option value="7">July</option>
+                  <option value="8">August</option>
+                  <option value="9">September</option>
+                  <option value="10">October</option>
+                  <option value="11">November</option>
+                  <option value="12">December</option>
+                </select>
+              </div>
+
+              <div class="report-filter">
+                <label for="yearSelect">Select Year</label>
+                <select id="yearSelect">
+                  <option value="2025">2025</option>
+                  <option value="2026" selected>2026</option>
+                  <option value="2027">2027</option>
+                </select>
+              </div>
+
+              <div
+                id="memberSelectContainer"
+                class="report-filter"
+                style="display: none"
+              >
+                <label for="memberSelect">Select Member</label>
+
+                <select id="memberSelect">
+                  <option value="">-- Select Member --</option>
+                </select>
+              </div>
+
+              <button type="button" id="generateBtn" class="btn btn-primary">
+                <i class="fas fa-chart-bar"></i>
+                Generate Report
+              </button>
+            </div>
+
+            <!-- LOADING / REPORT CONTENT -->
+            <div id="reportOutput" style="display: none"></div>
+
+            <!-- EXPORT BUTTONS -->
+            <div id="reportExportButtons" style="display: none">
+              <button type="button" id="downloadPdfBtn" class="btn btn-danger">
+                <i class="fas fa-file-pdf"></i>
+                Download PDF
+              </button>
+
+              <button type="button" id="exportExcelBtn" class="btn btn-success">
+                <i class="fas fa-file-excel"></i>
+                Export Excel
+              </button>
+            </div>
+          </div>
         </div>
+
         <p class="note">
           <i class="fas fa-info-circle"></i> Reports can be downloaded in PDF
           format, and you can also export data to Excel.
@@ -174,6 +243,8 @@
       </div>
     </div>
     <script src="notifications.js"></script>
+    <script src="organization.js"></script>
     <script src="reports.js"></script>
+    <script src="nav.js"></script>
   </body>
 </html>

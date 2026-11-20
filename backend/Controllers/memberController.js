@@ -311,3 +311,32 @@ exports.uploadProfilePicture = async (req, res) => {
     });
   }
 };
+
+// ========================================
+// logout member
+// ========================================
+exports.logoutMember = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    if (!userId) {
+      return res.status(400).json({
+        message: "Invalid user session.",
+      });
+    }
+
+    res.clearCookie("token");
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
+  } catch (error) {
+    console.error("Logout error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error during logout",
+      error: error.message,
+    });
+  }
+};

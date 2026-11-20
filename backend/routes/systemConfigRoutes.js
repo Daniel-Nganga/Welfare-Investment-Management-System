@@ -11,6 +11,6 @@ const { adminOnly } = require("../middleware/adminMiddleware");
 
 // Admin-only access
 router.get("/settings", protectPayment, getSystemConfig);
-router.put("/settings", protectPayment, adminOnly, updateSystemConfig);
+router.put("/settings/update", protectPayment, adminOnly, updateSystemConfig);
 
 module.exports = router;

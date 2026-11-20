@@ -5,6 +5,7 @@ const API_BASE = "http://localhost:5000/api";
 const API = {
   member: `${API_BASE}/member`,
   systemConfig: `${API_BASE}/system-config/settings`,
+  systemConfigUpdate: `${API_BASE}/system-config/settings/update`,
   contributionRules: `${API_BASE}/settings/contribution-rules`,
   notifications: `http://localhost:5000/api/notifications`,
 };
@@ -509,12 +510,6 @@ async function loadSystemConfig() {
         field.value = config[key];
       }
     });
-    const organizationNameDisplay = document.getElementById(
-      "organizationNameDisplay",
-    );
-    organizationNameDisplay.textContent = config.organizationName;
-    organizationNameDisplay.style.fontWeight = "bold";
-    organizationNameDisplay.style.color = "white";
   } catch (error) {
     console.error("Load system configuration:", error);
     showPageNotification(error.message, "error");
@@ -549,7 +544,7 @@ async function saveSystemConfig() {
   }
 
   try {
-    const result = await apiRequest(API.systemConfig, {
+    const result = await apiRequest(API.systemConfigUpdate, {
       method: "PUT",
       body: JSON.stringify(data),
     });
@@ -557,6 +552,7 @@ async function saveSystemConfig() {
     const config = result.data || result.config || result;
 
     setText("organizationNameDisplay", config.organizationName);
+    updateAppFooter(config);
 
     showPageNotification(
       result.message || "System configuration saved successfully.",

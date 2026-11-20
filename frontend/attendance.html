@@ -56,7 +56,7 @@
     <aside class="sidebar">
       <div class="sidebar-header">
         <div class="logo-icon"><i class="fas fa-users"></i></div>
-        <h3>Welfare & Investment Group</h3>
+        <h3 id="organizationNameDisplay"></h3>
       </div>
       <nav class="nav">
         <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
@@ -85,8 +85,8 @@
         >
         <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
       </nav>
-      <div class="logout">
-        <a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      <div class="logout" id="logoutBtn">
+        <a><i class="fas fa-sign-out-alt"></i> Logout</a>
       </div>
     </aside>
 
@@ -132,10 +132,8 @@
               alt="Profile picture"
             />
             <div>
-              <strong class="user-name">John Kamau</strong><br /><small
-                class="user-role"
-                >Administrator</small
-              >
+              <strong class="user-name" id="memberProfileName"></strong
+              ><br /><small class="user-role" id="memberRole"></small>
             </div>
           </div>
         </div>
@@ -170,6 +168,8 @@
         </p>
       </div>
     </div>
+    <script src="organization.js"></script>
     <script src="notifications.js"></script>
+    <script src="nav.js"></script>
   </body>
 </html>

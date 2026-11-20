@@ -7,174 +7,95 @@ const Fine = require("../models/FineModel");
 // Helper for "Select Report Period" (e.g., ?month=9&year=2025)
 const buildDateRange = (month, year, field) => {
   if (!year) return {};
+  const parsedYear = Number(year);
   if (month) {
+    const parsedMonth = Number(month);
     return {
       [field]: {
-        $gte: new Date(year, month - 1, 1),
-        $lte: new Date(year, month, 0, 23, 59, 59, 999),
+        $gte: new Date(parsedYear, parsedMonth - 1, 1),
+        $lte: new Date(parsedYear, parsedMonth, 0, 23, 59, 59, 999),
       },
     };
   }
-  // Annual filter if only year is provided
   return {
     [field]: {
-      $gte: new Date(year, 0, 1),
-      $lte: new Date(year, 11, 31, 23, 59, 59, 999),
+      $gte: new Date(parsedYear, 0, 1),
+      $lte: new Date(parsedYear, 11, 31, 23, 59, 59, 999),
     },
   };
 };
-//dashboard report
+
+// ==========================================
+// 1. DASHBOARD REPORT
+// ==========================================
 
 exports.getDashboardReport = async (req, res) => {
   try {
     const investmentResult = await PaymentInvestmentWelfare.aggregate([
-      {
-        $match: {
-          paymentDate: "Investment",
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          totalInvestment: { $sum: "$amount" },
-        },
-      },
+      { $match: { paymentType: "Investment" } },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
     ]);
-
     const totalInvestment =
       investmentResult.length > 0 ? investmentResult[0].total : 0;
 
     const welfareResult = await PaymentInvestmentWelfare.aggregate([
-      {
-        $match: {
-          paymentType: "Welfare",
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          total: { $sum: "$amount" },
-        },
-      },
+      { $match: { paymentType: "Welfare" } },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
     ]);
-
     const totalWelfare = welfareResult.length > 0 ? welfareResult[0].total : 0;
 
-    // FINE PAYMENTS
-    // -------------------------------
-
     const fineResult = await FinePayment.aggregate([
-      {
-        $group: {
-          _id: null,
-          total: { $sum: "$amount" },
-        },
-      },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
     ]);
-
     const totalFine = fineResult.length > 0 ? fineResult[0].total : 0;
 
-    //EXPENSES;
-    // -------------------------------
-
     const expenseResult = await Expense.aggregate([
-      {
-        $group: {
-          _id: null,
-          total: { $sum: "$amount" },
-        },
-      },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
     ]);
-
     const totalExpenses = expenseResult.length > 0 ? expenseResult[0].total : 0;
 
-    //WELFARE USED
-    // -------------------------------
-
     const welfareExpenseResult = await Expense.aggregate([
-      {
-        $group: {
-          _id: null,
-          total: {
-            $sum: "$fundAllocation.welfare",
-          },
-        },
-      },
+      { $group: { _id: null, total: { $sum: "$fundAllocation.welfare" } } },
     ]);
-
     const totalWelfareUsed =
       welfareExpenseResult.length > 0 ? welfareExpenseResult[0].total : 0;
 
-    //FINE USED
-    // -------------------------------
-
     const fineExpenseResult = await Expense.aggregate([
-      {
-        $group: {
-          _id: null,
-          total: {
-            $sum: "$fundAllocation.fine",
-          },
-        },
-      },
+      { $group: { _id: null, total: { $sum: "$fundAllocation.fine" } } },
     ]);
-
     const totalFineUsed =
       fineExpenseResult.length > 0 ? fineExpenseResult[0].total : 0;
 
-    // -------------------------------
-    // AVAILABLE BALANCES
-    // -------------------------------
-
     const welfareBalance = totalWelfare - totalWelfareUsed;
-
     const fineBalance = totalFine - totalFineUsed;
-
     const totalAvailableFunds = welfareBalance + fineBalance;
 
-    // MEMBER COUNTS
-    // -------------------------------
-
     const totalMembers = await User.countDocuments();
-
-    const activeMembers = await User.countDocuments({
-      status: "active",
-    });
-
-    const inactiveMembers = await User.countDocuments({
-      status: "inactive",
-    });
-
-    // RESPONSE
-    // -------------------------------
+    const activeMembers = await User.countDocuments({ status: "active" });
+    const inactiveMembers = await User.countDocuments({ status: "inactive" });
 
     res.status(200).json({
       message: "Dashboard report retrieved successfully",
-
       members: {
         total: totalMembers,
         active: activeMembers,
         inactive: inactiveMembers,
       },
-
       payments: {
         investment: totalInvestment,
         welfare: totalWelfare,
         fine: totalFine,
       },
-
       expenses: {
         total: totalExpenses,
         welfareUsed: totalWelfareUsed,
         fineUsed: totalFineUsed,
       },
-
       funds: {
         welfareBalance,
         fineBalance,
         totalAvailable: totalAvailableFunds,
       },
-
       accountingNote: {
         investment:
           "Investment payments are SACCO funds and are not available for group expenses.",
@@ -196,7 +117,16 @@ exports.getDashboardReport = async (req, res) => {
 
 exports.getPaymentReport = async (req, res) => {
   try {
-    const payments = await PaymentInvestmentWelfare.find()
+    const { type, month, year } = req.query;
+    const filter = {
+      ...buildDateRange(month, year, "paymentDate"),
+    };
+
+    if (type) {
+      filter.paymentType = type;
+    }
+
+    const payments = await PaymentInvestmentWelfare.find(filter)
       .populate("member", "memberNumber fullName phoneNumber")
       .sort({ paymentDate: -1 });
 
@@ -212,18 +142,15 @@ exports.getPaymentReport = async (req, res) => {
 
     res.status(200).json({
       message: "Payment report retrieved successfully",
-
       summary: {
         totalPayments,
         totalInvestment,
         totalWelfare,
       },
-
       payments,
     });
   } catch (error) {
     console.error("Payment Report Error:", error);
-
     res.status(500).json({
       message: "Failed to retrieve payment report",
       error: error.message,
@@ -237,52 +164,40 @@ exports.getPaymentReport = async (req, res) => {
 
 exports.getFineReport = async (req, res) => {
   try {
-    // Total fines issued
-    const fineResult = await Fine.aggregate([
-      {
-        $group: {
-          _id: null,
-          total: { $sum: "$amount" },
-        },
-      },
-    ]);
+    const { month, year } = req.query;
+    const fineDateFilter = buildDateRange(month, year, "createdAt");
+    const paymentDateFilter = buildDateRange(month, year, "paymentDate");
 
+    const fineResult = await Fine.aggregate([
+      { $match: fineDateFilter },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
+    ]);
     const totalFinesIssued = fineResult.length > 0 ? fineResult[0].total : 0;
 
-    // Total fine payments
     const paymentResult = await FinePayment.aggregate([
-      {
-        $group: {
-          _id: null,
-          total: { $sum: "$amount" },
-        },
-      },
+      { $match: paymentDateFilter },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
     ]);
-
     const totalFinePayments =
       paymentResult.length > 0 ? paymentResult[0].total : 0;
 
-    // Outstanding fines
     const outstandingFines = totalFinesIssued - totalFinePayments;
 
-    const fines = await Fine.find()
+    const fines = await Fine.find(fineDateFilter)
       .populate("member", "memberNumber fullName phoneNumber")
       .sort({ createdAt: -1 });
 
     res.status(200).json({
       message: "Fine report retrieved successfully",
-
       summary: {
         totalFinesIssued,
         totalFinePayments,
         outstandingFines,
       },
-
       fines,
     });
   } catch (error) {
     console.error("Fine Report Error:", error);
-
     res.status(500).json({
       message: "Failed to retrieve fine report",
       error: error.message,
@@ -296,7 +211,10 @@ exports.getFineReport = async (req, res) => {
 
 exports.getExpenseReport = async (req, res) => {
   try {
-    const expenses = await Expense.find()
+    const { month, year } = req.query;
+    const expenseDateFilter = buildDateRange(month, year, "expenseDate");
+
+    const expenses = await Expense.find(expenseDateFilter)
       .populate("recordedBy", "memberNumber fullName phoneNumber role")
       .sort({ expenseDate: -1 });
 
@@ -306,29 +224,26 @@ exports.getExpenseReport = async (req, res) => {
     );
 
     const totalWelfareUsed = expenses.reduce(
-      (total, expense) => total + expense.fundAllocation.welfare,
+      (total, expense) => total + (expense.fundAllocation?.welfare || 0),
       0,
     );
 
     const totalFineUsed = expenses.reduce(
-      (total, expense) => total + expense.fundAllocation.fine,
+      (total, expense) => total + (expense.fundAllocation?.fine || 0),
       0,
     );
 
     res.status(200).json({
       message: "Expense report retrieved successfully",
-
       summary: {
         totalExpenses,
         totalWelfareUsed,
         totalFineUsed,
       },
-
       expenses,
     });
   } catch (error) {
     console.error("Expense Report Error:", error);
-
     res.status(500).json({
       message: "Failed to retrieve expense report",
       error: error.message,
@@ -342,152 +257,112 @@ exports.getExpenseReport = async (req, res) => {
 
 exports.getFinancialSummary = async (req, res) => {
   try {
-    // Investment
-    const investmentResult = await PaymentInvestmentWelfare.aggregate([
-      {
-        $match: {
-          paymentType: "Investment",
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          total: { $sum: "$amount" },
-        },
-      },
-    ]);
+    const { month, year } = req.query;
+    const paymentDateFilter = buildDateRange(month, year, "paymentDate");
+    const expenseDateFilter = buildDateRange(month, year, "expenseDate");
 
+    const investmentResult = await PaymentInvestmentWelfare.aggregate([
+      { $match: { paymentType: "Investment", ...paymentDateFilter } },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
+    ]);
     const totalInvestment = investmentResult.length
       ? investmentResult[0].total
       : 0;
 
-    // Welfare
     const welfareResult = await PaymentInvestmentWelfare.aggregate([
-      {
-        $match: {
-          paymentType: "Welfare",
-        },
-      },
-      {
-        $group: {
-          _id: null,
-          total: { $sum: "$amount" },
-        },
-      },
+      { $match: { paymentType: "Welfare", ...paymentDateFilter } },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
     ]);
-
     const totalWelfare = welfareResult.length ? welfareResult[0].total : 0;
 
-    // Fine
     const fineResult = await FinePayment.aggregate([
-      {
-        $group: {
-          _id: null,
-          total: { $sum: "$amount" },
-        },
-      },
+      { $match: paymentDateFilter },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
     ]);
-
     const totalFine = fineResult.length ? fineResult[0].total : 0;
 
-    // Expenses
     const expenseResult = await Expense.aggregate([
-      {
-        $group: {
-          _id: null,
-          total: { $sum: "$amount" },
-        },
-      },
+      { $match: expenseDateFilter },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
     ]);
-
     const totalExpenses = expenseResult.length ? expenseResult[0].total : 0;
 
-    // Fund usage
     const fundResult = await Expense.aggregate([
+      { $match: expenseDateFilter },
       {
         $group: {
           _id: null,
-
-          welfare: {
-            $sum: "$fundAllocation.welfare",
-          },
-
-          fine: {
-            $sum: "$fundAllocation.fine",
-          },
+          welfare: { $sum: "$fundAllocation.welfare" },
+          fine: { $sum: "$fundAllocation.fine" },
         },
       },
     ]);
 
     const totalWelfareUsed = fundResult.length ? fundResult[0].welfare : 0;
-
     const totalFineUsed = fundResult.length ? fundResult[0].fine : 0;
-
-    // Balances
     const welfareBalance = totalWelfare - totalWelfareUsed;
-
     const fineBalance = totalFine - totalFineUsed;
-
     res.status(200).json({
       message: "Financial summary retrieved successfully",
-
       investment: {
         total: totalInvestment,
         availableForExpenses: 0,
         note: "Investment is SACCO money and is not used for group expenses.",
       },
-
       welfare: {
         totalReceived: totalWelfare,
         totalUsed: totalWelfareUsed,
         balance: welfareBalance,
       },
-
       fines: {
         totalReceived: totalFine,
         totalUsed: totalFineUsed,
         balance: fineBalance,
       },
-
       expenses: {
         total: totalExpenses,
       },
-
       groupFunds: {
         totalReceived: totalWelfare + totalFine,
-
         totalUsed: totalWelfareUsed + totalFineUsed,
-
         balance: welfareBalance + fineBalance,
       },
     });
   } catch (error) {
     console.error("Financial Summary Error:", error);
-
     res.status(500).json({
       message: "Failed to retrieve financial summary",
       error: error.message,
     });
   }
 };
-
+// ==========================================
 // 6. MEMBER STATEMENT
+// ==========================================
 exports.getMemberStatement = async (req, res) => {
   try {
     const { memberId } = req.params;
+    const { month, year } = req.query;
+    const paymentDateFilter = buildDateRange(month, year, "paymentDate");
+    const fineDateFilter = buildDateRange(month, year, "createdAt");
     const [member, payments, fines, finePayments] = await Promise.all([
       User.findById(memberId).select(
         "memberNumber fullName phoneNumber status",
       ),
-      PaymentInvestmentWelfare.find({ member: memberId }).sort({
-        paymentDate: -1,
-      }),
-      Fine.find({ member: memberId }).sort({ createdAt: -1 }),
-      FinePayment.find({ member: memberId }).sort({ paymentDate: -1 }),
+      PaymentInvestmentWelfare.find({
+        member: memberId,
+        ...paymentDateFilter,
+      }).sort({ paymentDate: -1 }),
+      Fine.find({
+        member: memberId,
+        ...fineDateFilter,
+      }).sort({ createdAt: -1 }),
+      FinePayment.find({
+        member: memberId,
+        ...paymentDateFilter,
+      }).sort({ paymentDate: -1 }),
     ]);
-
     if (!member) return res.status(404).json({ message: "Member not found" });
-
     res.status(200).json({
       message: "Member statement retrieved successfully",
       member,
@@ -502,8 +377,9 @@ exports.getMemberStatement = async (req, res) => {
     });
   }
 };
-
-// 7. OUTSTANDING REPORT (Unpaid contributions & fines)
+// ==========================================
+// 7. OUTSTANDING REPORT
+// ==========================================
 exports.getOutstandingReport = async (req, res) => {
   try {
     const { month, year } = req.query;
@@ -517,13 +393,10 @@ exports.getOutstandingReport = async (req, res) => {
       "member",
       "memberNumber fullName",
     );
-
-    // Find active members who have not made a contribution in the selected period
     const paidMemberIds = new Set(payments.map((p) => String(p.member)));
     const unpaidMembers = members.filter(
       (m) => !paidMemberIds.has(String(m._id)),
     );
-
     res.status(200).json({
       message: "Outstanding report retrieved successfully",
       unpaidMembers,
