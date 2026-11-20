@@ -6,11 +6,13 @@
 }
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   background: url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1920&q=80")
     center/cover no-repeat;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
   position: relative;
 }
 body::before {
@@ -31,6 +33,7 @@ body::before {
   max-width: 420px;
   border-radius: 16px;
   padding: 40px 36px;
+  margin: auto;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
   text-align: center;
 }
@@ -155,4 +158,62 @@ h2 {
   display: flex;
   justify-content: center;
   gap: 18px;
+}
+
+.login-footer {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 24px;
+  width: 100%;
+  padding: 16px 28px;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(15, 23, 42, 0.68);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.login-footer-details {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 16px;
+}
+
+.login-footer-details > span + span {
+  padding-left: 16px;
+  border-left: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.login-footer-credit {
+  display: flex;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .login-card {
+    width: calc(100% - 32px);
+    padding: 32px 24px;
+  }
+
+  .login-footer {
+    flex-direction: column;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .login-footer-details {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .login-footer-details > span + span {
+    padding-left: 0;
+    border-left: 0;
+  }
 }

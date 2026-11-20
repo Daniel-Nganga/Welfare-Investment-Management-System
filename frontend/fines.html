@@ -16,7 +16,7 @@
     <aside class="sidebar">
       <div class="sidebar-header">
         <div class="logo-icon"><i class="fas fa-users"></i></div>
-        <h3>Welfare & Investment Group</h3>
+        <h3 id="organizationNameDisplay"></h3>
       </div>
       <nav class="nav">
         <a href="dashboard.html"><i class="fas fa-home"></i> Dashboard</a>
@@ -47,8 +47,8 @@
         >
         <a href="settings.html"><i class="fas fa-cog"></i> Settings</a>
       </nav>
-      <div class="logout">
-        <a href="index.html"><i class="fas fa-sign-out-alt"></i> Logout</a>
+      <div class="logout" id="logoutBtn">
+        <a><i class="fas fa-sign-out-alt"></i> Logout</a>
       </div>
     </aside>
 
@@ -94,7 +94,7 @@
               alt="Profile"
             />
             <div>
-              <strong id="profileName"></strong><br />
+              <strong id="memberProfileName"></strong><br />
               <small id="memberRole"></small>
             </div>
           </div>
@@ -274,6 +274,19 @@
             </div>
             <div class="table-footer">
               <span id="finesRecordCount">Showing 0 fine records</span>
+              <label class="rows-per-page-label">
+                Rows per page
+                <select
+                  class="rows-per-page-select"
+                  id="finesRowsPerPage"
+                  aria-label="Fine rows per page"
+                >
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </label>
               <div class="pagination" id="finesPagination"></div>
             </div>
           </div>
@@ -322,6 +335,19 @@
             </div>
             <div class="table-footer">
               <span id="paymentsRecordCount">Showing 0 payment records</span>
+              <label class="rows-per-page-label">
+                Rows per page
+                <select
+                  class="rows-per-page-select"
+                  id="paymentsRowsPerPage"
+                  aria-label="Payment rows per page"
+                >
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+              </label>
               <div class="pagination" id="paymentsPagination"></div>
             </div>
           </div>
@@ -522,6 +548,8 @@
     </script>
 
     <script src="fine.js"></script>
+    <script src="organization.js"></script>
     <script src="notifications.js"></script>
+    <script src="nav.js"></script>
   </body>
 </html>

@@ -6,8 +6,6 @@
 
 // Change this if your backend uses a different port.
 const API_BASE = "http://localhost:5000/api";
-const PAGE_SIZE = 10;
-
 // ---------- State ----------
 let currentRole = "";
 let currentUser = null;
@@ -20,6 +18,7 @@ let editingFinePaymentId = null;
 let pendingDelete = null; // { type: "fine" | "payment", id }
 
 const pageState = { fines: 1, payments: 1 };
+const pageSizes = { fines: 10, payments: 10 };
 
 // ---------- Small helpers ----------
 const $ = (id) => document.getElementById(id);
@@ -518,10 +517,10 @@ function renderEmpty(body, colspan, message) {
 }
 
 function paginate(rows, key) {
-  const pages = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
+  const pages = Math.max(1, Math.ceil(rows.length / pageSizes[key]));
   pageState[key] = Math.min(Math.max(1, pageState[key]), pages);
-  const start = (pageState[key] - 1) * PAGE_SIZE;
-  return { start, slice: rows.slice(start, start + PAGE_SIZE) };
+  const start = (pageState[key] - 1) * pageSizes[key];
+  return { start, slice: rows.slice(start, start + pageSizes[key]) };
 }
 
 function renderFinesTable(fines) {
@@ -530,8 +529,8 @@ function renderFinesTable(fines) {
 
   if (!fines.length) {
     renderEmpty(body, colspan, "No fine records found.");
-    $("finesRecordCount").textContent = "Showing 0 fine records";
-    $("finesPagination").innerHTML = "";
+    $("finesRecordCount").textContent = "Showing 0–0 of 0 fine records";
+    renderPagination("finesPagination", fines.length, "fines");
     return;
   }
 
@@ -575,8 +574,8 @@ function renderPaymentsTable(payments) {
 
   if (!payments.length) {
     renderEmpty(body, colspan, "No fine payment records found.");
-    $("paymentsRecordCount").textContent = "Showing 0 payment records";
-    $("paymentsPagination").innerHTML = "";
+    $("paymentsRecordCount").textContent = "Showing 0–0 of 0 payment records";
+    renderPagination("paymentsPagination", payments.length, "payments");
     return;
   }
 
@@ -617,39 +616,66 @@ function renderPagination(containerId, total, key) {
   const container = $(containerId);
   container.innerHTML = "";
 
-  const pages = Math.ceil(total / PAGE_SIZE);
-  if (pages <= 1) return;
-
+  const pages = Math.ceil(total / pageSizes[key]);
+  if (pages === 0) pageState[key] = 1;
   const current = pageState[key];
+  const controls = document.createElement("div");
+  controls.className = "pagination-controls";
 
-  const addButton = (
-    label,
-    page,
-    { disabled = false, active = false } = {},
-  ) => {
+  const addButton = (label, page, { disabled = false, active = false } = {}) => {
     const button = document.createElement("button");
     button.type = "button";
-    button.className = `page-btn${active ? " active" : ""}`;
+    button.className = `pagination-btn${active ? " active" : ""}`;
     button.textContent = label;
     button.disabled = disabled;
+    if (active) button.setAttribute("aria-current", "page");
     button.addEventListener("click", () => {
+      if (disabled) return;
       pageState[key] = page;
       applyFilters();
     });
-    container.appendChild(button);
+    controls.appendChild(button);
   };
 
-  addButton("‹", current - 1, { disabled: current === 1 });
+  addButton("Previous", current - 1, {
+    disabled: current === 1 || pages === 0,
+  });
 
-  let first = Math.max(1, current - 2);
-  const last = Math.min(pages, first + 4);
-  first = Math.max(1, last - 4);
+  if (pages <= 7) {
+    for (let page = 1; page <= Math.max(pages, 1); page++) {
+      addButton(String(page), page, {
+        active: page === current,
+        disabled: pages === 0,
+      });
+    }
+  } else {
+    addButton("1", 1, { active: current === 1 });
+    if (current > 3) {
+      const ellipsis = document.createElement("span");
+      ellipsis.className = "pagination-ellipsis";
+      ellipsis.textContent = "…";
+      controls.appendChild(ellipsis);
+    }
 
-  for (let page = first; page <= last; page++) {
-    addButton(String(page), page, { active: page === current });
+    const first = Math.max(2, Math.min(current - 1, pages - 2));
+    const last = Math.min(pages - 1, Math.max(current + 1, 3));
+    for (let page = first; page <= last; page++) {
+      addButton(String(page), page, { active: page === current });
+    }
+
+    if (current < pages - 2) {
+      const ellipsis = document.createElement("span");
+      ellipsis.className = "pagination-ellipsis";
+      ellipsis.textContent = "…";
+      controls.appendChild(ellipsis);
+    }
+    addButton(String(pages), pages, { active: current === pages });
   }
 
-  addButton("›", current + 1, { disabled: current === pages });
+  addButton("Next", current + 1, {
+    disabled: pages === 0 || current >= pages,
+  });
+  container.appendChild(controls);
 }
 
 // ============================================================
@@ -1062,6 +1088,15 @@ function showNotification(message, isError = false) {
 // EVENT WIRING
 // ============================================================
 function initFinesPage() {
+  ["fines", "payments"].forEach((key) => {
+    const select = $(`${key}RowsPerPage`);
+    select.addEventListener("change", () => {
+      pageSizes[key] = Number(select.value);
+      pageState[key] = 1;
+      applyFilters();
+    });
+  });
+
   // Filters
   let searchTimer = null;
   $("fineSearchInput").addEventListener("input", () => {

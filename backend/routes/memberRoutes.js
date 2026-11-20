@@ -7,6 +7,7 @@ const {
   getAllMembers,
   updatePassword,
   uploadProfilePicture,
+  logoutMember,
 } = require("../Controllers/memberController");
 const { protectPayment } = require("../middleware/paymentProtectionMiddleware");
 const { profilePictureUpload } = require("../middleware/cloudinaryMiddleware");
@@ -27,4 +28,5 @@ router.put(
   uploadProfilePicture,
 );
 
+router.post("/logout", logoutMember);
 module.exports = router;
